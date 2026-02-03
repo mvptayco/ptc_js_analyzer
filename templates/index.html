@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JavaScript Security Analyzer</title>
+  <meta name="description" content="Analyze JavaScript files for sensitive data, XSS vulnerabilities, and API endpoints." />
+
+  <meta name="theme-color" content="#FF6500" />
+  <meta name="color-scheme" content="dark light" />
+
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <!-- Subtle background decoration -->
+  <div class="bg-wrap" aria-hidden="true">
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="bg-grid"></div>
+  </div>
+
+  <div class="container">
+    <!-- Topbar -->
+    <header class="topbar" role="banner">
+      <div class="brand" aria-label="App title">
+        <div class="brand-mark" aria-hidden="true"><i class="fas fa-shield-alt"></i></div>
+        <div class="brand-text">
+          <div class="brand-name">JavaScript Security Analyzer</div>
+          <div class="brand-tag">Sensitive data • XSS patterns • API endpoints</div>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle theme" title="Toggle theme">
+          <i id="themeIcon" class="fas fa-moon" aria-hidden="true"></i>
+        </button>
+
+        <button id="contactBtn" class="btn-pill" type="button"
+                aria-haspopup="dialog" aria-controls="emailModal" aria-label="Open contact email">
+          <i class="fas fa-envelope" aria-hidden="true"></i>
+          <span>Contact</span>
+        </button>
+      </div>
+    </header>
+
+    <main id="main" role="main">
+      <!-- Hero -->
+      <section class="hero card" aria-label="Overview">
+        <h1 class="hero-title">
+          JavaScript Security Analyzer
+        </h1>
+        <p class="hero-subtitle">
+          Analyze JS for <strong>API keys</strong>, <strong>credentials</strong>, <strong>emails</strong>,
+          <strong>XSS sinks</strong>, and <strong>endpoints</strong>. For authorized testing only.
+        </p>
+
+        <div class="hero-actions">
+          <button id="openAnalyzerBtn" class="btn-primary" type="button">
+            <i class="fas fa-magnifying-glass" aria-hidden="true"></i> Open Analyzer
+          </button>
+
+          <a class="btn-secondary" href="https://github.com/mvptayco" target="_blank" rel="noopener noreferrer">
+            <i class="fab fa-github" aria-hidden="true"></i> GitHub
+          </a>
+
+          <a class="btn-secondary" href="https://roadmap.sh/cyber-security" target="_blank" rel="noopener noreferrer">
+            <i class="fas fa-graduation-cap" aria-hidden="true"></i> Course
+          </a>
+        </div>
+
+        <div class="hero-note" role="note">
+          <i class="fas fa-server" aria-hidden="true"></i>
+          All analysis is performed server-side for security and performance.
+        </div>
+      </section>
+
+      <!-- Results + Files (stay on page) -->
+      <div id="error" class="error hidden" role="alert" aria-live="assertive"></div>
+
+      <section id="files-section" class="card hidden" aria-labelledby="files-title">
+        <div class="section-head">
+          <h2 id="files-title">Files Analyzed</h2>
+        </div>
+        <div id="files-grid" class="files-grid" role="list"></div>
+      </section>
+
+      <section id="results" class="card hidden" aria-labelledby="results-title" aria-busy="false">
+        <div class="results-header">
+          <div class="results-topbar">
+            <h2 id="results-title">Analysis Results</h2>
+            <button id="backToFiles" class="btn-secondary hidden" type="button">
+              <i class="fas fa-arrow-left" aria-hidden="true"></i> Back to Files
+            </button>
+          </div>
+
+          <div class="filters" role="toolbar" aria-label="Filter results">
+            <button class="filter-btn active" data-filter="all" type="button">All</button>
+            <button class="filter-btn" data-filter="api_keys" type="button">API Keys</button>
+            <button class="filter-btn" data-filter="credentials" type="button">Credentials</button>
+            <button class="filter-btn" data-filter="emails" type="button">Emails</button>
+            <button class="filter-btn" data-filter="xss" type="button">XSS Vulnerabilities</button>
+            <button class="filter-btn" data-filter="xss_functions" type="button">XSS Functions</button>
+            <button class="filter-btn" data-filter="api_endpoints" type="button">API Endpoints</button>
+            <button class="filter-btn" data-filter="parameters" type="button">Parameters</button>
+            <button class="filter-btn" data-filter="paths" type="button">Paths/Directories</button>
+            <button class="filter-btn" data-filter="comments" type="button">Comments</button>
+            <button class="filter-btn" data-filter="server_info" type="button">Server Info</button>
+            <button class="filter-btn" data-filter="recommendations" type="button">Recommendations</button>
+          </div>
+        </div>
+
+        <div class="summary" role="region" aria-label="Summary of findings">
+          <div class="stat-card"><i class="fas fa-key" aria-hidden="true"></i><div><span class="stat-value" id="stat-api-keys">0</span><span class="stat-label">API Keys</span></div></div>
+          <div class="stat-card"><i class="fas fa-lock" aria-hidden="true"></i><div><span class="stat-value" id="stat-credentials">0</span><span class="stat-label">Credentials</span></div></div>
+          <div class="stat-card"><i class="fas fa-envelope" aria-hidden="true"></i><div><span class="stat-value" id="stat-emails">0</span><span class="stat-label">Emails</span></div></div>
+          <div class="stat-card"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i><div><span class="stat-value" id="stat-xss">0</span><span class="stat-label">XSS Issues</span></div></div>
+          <div class="stat-card"><i class="fas fa-code-branch" aria-hidden="true"></i><div><span class="stat-value" id="stat-endpoints">0</span><span class="stat-label">API Endpoints</span></div></div>
+          <div class="stat-card"><i class="fas fa-shield-halved" aria-hidden="true"></i><div><span class="stat-value" id="stat-recommendations">0</span><span class="stat-label">Recommendations</span></div></div>
+        </div>
+
+        <div class="findings-container" role="region" aria-label="Detailed findings">
+          <div id="findings-content"></div>
+        </div>
+      </section>
+
+      <footer class="footer" role="contentinfo">
+        <p><strong>JavaScript Security Analyzer</strong> &copy; 2026</p>
+        <p class="footer-disclaimer">For authorized security testing and educational purposes only</p>
+      </footer>
+    </main>
+
+    <!-- =========================
+         ANALYZER MODAL (NEW)
+    ========================== -->
+    <div id="analyzerModal" class="modal hidden" role="dialog" aria-modal="true"
+         aria-labelledby="analyzerModalTitle" aria-hidden="true">
+      <div class="modal-overlay" data-close="true"></div>
+
+      <div class="modal-panel modal-wide" role="document">
+        <div class="modal-header">
+          <h3 id="analyzerModalTitle">
+            <i class="fas fa-magnifying-glass" aria-hidden="true"></i> Analyze JavaScript
+          </h3>
+
+          <div class="modal-header-actions">
+            <!-- ✅ Reset removed; Clear stays -->
+            <button id="clearInputsBtn" class="btn-secondary" type="button" aria-label="Clear inputs">
+              <i class="fas fa-eraser" aria-hidden="true"></i> Clear
+            </button>
+
+            <button class="modal-close" type="button" aria-label="Close modal" data-close="true">
+              <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-body">
+          <!-- API Key Section Removed -->
+          
+          <!-- Analyzer section moved inside modal -->
+          <section class="analyzer" aria-label="Analyzer input">
+            <!-- Tabs -->
+            <div class="input-tabs" role="tablist" aria-label="Input modes">
+              <button class="tab-btn active" role="tab" id="tab-single" aria-selected="true"
+                      aria-controls="single-tab" data-tab="single" type="button">
+                <i class="fas fa-link" aria-hidden="true"></i> Single URL
+              </button>
+
+              <button class="tab-btn" role="tab" id="tab-multiple" aria-selected="false"
+                      aria-controls="multiple-tab" data-tab="multiple" type="button">
+                <i class="fas fa-list" aria-hidden="true"></i> Multiple URLs
+              </button>
+
+              <button class="tab-btn" role="tab" id="tab-file" aria-selected="false"
+                      aria-controls="file-tab" data-tab="file" type="button">
+                <i class="fas fa-file-arrow-up" aria-hidden="true"></i> Upload File
+              </button>
+            </div>
+
+            <!-- Single URL -->
+            <div id="single-tab" class="tab-content active" role="tabpanel" aria-labelledby="tab-single" tabindex="0">
+              <form class="input-group" onsubmit="return false" aria-label="Single URL form">
+                <label for="jsUrl" class="sr-only">JavaScript file URL</label>
+                <input type="url" id="jsUrl" name="jsUrl"
+                       placeholder="Enter JavaScript file URL (e.g., https://example.com/app.js)"
+                       inputmode="url" spellcheck="false" autocomplete="off" required />
+                <button id="analyzeBtn" class="btn-primary" type="button">
+                  <i class="fas fa-search" aria-hidden="true"></i> Analyze
+                </button>
+              </form>
+            </div>
+
+            <!-- Multiple URLs -->
+            <div id="multiple-tab" class="tab-content hidden" role="tabpanel" aria-labelledby="tab-multiple" tabindex="0">
+              <div class="input-group-vertical">
+                <label for="multipleUrls" class="sr-only">Multiple JavaScript URLs</label>
+                <textarea id="multipleUrls" rows="6" spellcheck="false"
+                          placeholder="Enter multiple URLs, one per line&#10;Example:&#10;https://example.com/app.js&#10;https://example.com/lib.js"></textarea>
+                <button id="analyzeMultipleBtn" class="btn-primary" type="button">
+                  <i class="fas fa-search" aria-hidden="true"></i> Analyze All
+                </button>
+              </div>
+            </div>
+
+            <!-- File -->
+            <div id="file-tab" class="tab-content hidden" role="tabpanel" aria-labelledby="tab-file" tabindex="0">
+              <div class="input-group-vertical">
+                <label for="urlFile" class="file-label">
+                  <i class="fas fa-upload" aria-hidden="true"></i>
+                  Choose file with URLs (one per line)
+                  <input type="file" id="urlFile" accept=".txt,.csv" />
+                </label>
+
+                <div id="fileName" class="file-name hidden" aria-live="polite"></div>
+
+                <button id="analyzeFileBtn" class="btn-primary" type="button" disabled aria-disabled="true">
+                  <i class="fas fa-search" aria-hidden="true"></i> Analyze File
+                </button>
+              </div>
+            </div>
+
+            <div class="helper-note">
+              <i class="fas fa-info-circle" aria-hidden="true"></i>
+              For local files, use <code>localhost</code> or <code>127.0.0.1</code> instead of <code>0.0.0.0</code>
+            </div>
+
+            <div id="loading" class="loading hidden" aria-live="polite" aria-atomic="true">
+              <div class="loading-spinner">
+                <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
+                <span id="loading-text">Analyzing...</span>
+              </div>
+              <div id="progress-log" class="progress-log hidden"></div>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- =========================
+         EMAIL MODAL (unchanged)
+    ========================== -->
+    <div id="emailModal" class="modal hidden" role="dialog" aria-modal="true"
+         aria-labelledby="emailModalTitle" aria-hidden="true">
+      <div class="modal-overlay" data-close="true"></div>
+
+      <div class="modal-panel" role="document">
+        <div class="modal-header">
+          <h3 id="emailModalTitle">
+            <i class="fas fa-envelope" aria-hidden="true"></i> Contact Email
+          </h3>
+
+          <button class="modal-close" type="button" aria-label="Close modal" data-close="true">
+            <i class="fas fa-times" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <p class="modal-desc">Use the email below to contact the project owner.</p>
+
+          <div class="modal-field">
+            <label for="contactEmail" class="modal-label">Email</label>
+            <div class="modal-input-row">
+              <input id="contactEmail" type="text" readonly value="jhonel.alam1@gmail.com" />
+              <button id="copyEmailBtn" class="btn-secondary" type="button">
+                <i class="fas fa-copy" aria-hidden="true"></i> Copy
+              </button>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <a class="btn-primary" href="mailto:jhonel.alam1@gmail.com?subject=JavaScript%20Security%20Analyzer%20Inquiry">
+              <i class="fas fa-paper-plane" aria-hidden="true"></i> Open Email
+            </a>
+            <button class="btn-secondary" type="button" data-close="true">
+              <i class="fas fa-check" aria-hidden="true"></i> Done
+            </button>
+          </div>
+
+          <div id="copyToast" class="toast hidden" role="status" aria-live="polite">Copied to clipboard ✅</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <noscript>
+    <div class="error" role="alert" style="max-width: 900px; margin: 1rem auto;">
+      JavaScript is required for theme toggle, modals, and analysis. Please enable JavaScript and reload.
+    </div>
+  </noscript>
+
+  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</body>
+</html>
