@@ -88,7 +88,7 @@ class SmartFilter:
         ]
         
         X = positive_samples + negative_samples
-        y = [1] * len(positive_samples) + [0] * len(negative_samples]
+        y = [1] * len(positive_samples) + [0] * len(negative_samples)
         
         try:
             self.pipeline.fit(X, y)
