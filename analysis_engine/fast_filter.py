@@ -1,5 +1,6 @@
 import warnings
 import logging
+import math
 
 # Optional imports for ML components
 try:
@@ -88,7 +89,7 @@ class SmartFilter:
         ]
         
         X = positive_samples + negative_samples
-        y = [1] * len(positive_samples) + [0] * len(negative_samples]
+        y = [1] * len(positive_samples) + [0] * len(negative_samples)
         
         try:
             self.pipeline.fit(X, y)
@@ -114,3 +115,24 @@ class SmartFilter:
             return bool(prediction == 1)
         except Exception:
             return True
+
+    def get_relevance_score(self, content: str) -> float:
+        """
+        Returns a relevance score between 0.0 and 1.0.
+        """
+        if not HAS_ML or not self.is_trained or not content:
+            return 1.0 # Default to high relevance if ML is broken
+            
+        try:
+            # Use decision_function which gives distance to hyperplane
+            # Positive distance = positive class (1), Negative = negative class (0)
+            dist = self.pipeline.decision_function([content])[0]
+            
+            # Simple sigmoid-like normalization for display purposes
+            # dist usually ranges from -infinity to +infinity, but for SVM often -1 to 1 around margin
+            # We map it to 0-1 range.
+            score = 1 / (1 + math.exp(-dist))
+            return float(score)
+        except Exception:
+            return 1.0
+
