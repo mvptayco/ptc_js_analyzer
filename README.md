@@ -76,6 +76,8 @@ This project is configured for easy deployment on Vercel.
 2.  Run `vercel` in the project directory.
 3.  Your app will be live at `https://your-project.vercel.app`.
 
+**Web Analytics**: This project includes Vercel Web Analytics integration for tracking visitors and page views. To enable analytics, go to your Vercel Dashboard → Select your project → Click the Analytics tab → Click Enable. See [VERCEL_WEB_ANALYTICS.md](VERCEL_WEB_ANALYTICS.md) for more details.
+
 ## 🏗️ Architecture
 
 *   **Backend**: Python (Flask)
