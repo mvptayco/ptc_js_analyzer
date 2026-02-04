@@ -20,6 +20,13 @@ const API = {
 };
 
 /* ===========================
+   Global State
+=========================== */
+window.CURRENT_RESULTS = [];
+window.CURRENT_FILE_ID = null;
+window.CURRENT_FILTER = "all";
+
+/* ===========================
    Helpers
 =========================== */
 const $ = (id) => document.getElementById(id);
@@ -415,9 +422,7 @@ $("urlFile")?.addEventListener("change", (e) => {
 /* ===========================
    Rendering: Files + Results + Stats + Filters
 =========================== */
-let CURRENT_RESULTS = [];        // all files results from backend
-let CURRENT_FILE_ID = null;      // selected file_id
-let CURRENT_FILTER = "all";
+// Global variables defined at top of file
 
 function setStat(id, value) {
   const el = $(id);
@@ -783,6 +788,81 @@ function renderSelectedFile() {
   if (showAll || CURRENT_FILTER === "comments")
       html += buildFindingGroup("Interesting Comments", "fas fa-comment-dots", file.interesting_comments);
 
+  if (CURRENT_FILTER === "techniques") {
+      const allFindings = [];
+      const categories = [
+          file.api_keys, file.credentials, file.emails, 
+          file.xss_vulnerabilities, file.xss_functions, 
+          file.api_endpoints, file.parameters, file.paths_directories, 
+          file.interesting_comments, file.server_info_findings, 
+          file.libraries, file.obfuscation_findings
+      ];
+      
+      categories.forEach(cat => {
+          if (Array.isArray(cat)) {
+              cat.forEach(item => {
+                  if (item && item.technique) {
+                      allFindings.push(item);
+                  }
+              });
+          }
+      });
+      
+      // Group by technique
+      const groups = {};
+      allFindings.forEach(f => {
+          let t = f.technique || "Unknown Technique";
+          
+          // Client-side refinement for generic techniques
+          // This handles cases where backend changes require a restart or cache clear
+          if (t === "Pattern / signature matching" || t === "Regex Pattern Matching") {
+              const type = (f.type || "").toLowerCase();
+              if (type.includes("email")) t = "Email Extraction";
+              else if (type.includes("ip") || type.includes("address")) t = "IP Address Discovery";
+              else if (type.includes("key") || type.includes("token") || type.includes("secret") || type.includes("auth") || type.includes("password") || type.includes("credential")) t = "API Key & Credential Detection";
+              else if (type.includes("comment") || type.includes("todo")) t = "Comment Analysis";
+          }
+          
+          if (!groups[t]) groups[t] = [];
+          groups[t].push(f);
+      });
+      
+      if (Object.keys(groups).length === 0) {
+           html += "<div class='finding-group'><h3 class='finding-title'><i class='fas fa-microscope'></i> Techniques Used</h3><div class='finding-list'><div class='finding-item' style='color:var(--muted); font-style:italic;'>No specific analysis techniques detected interesting patterns.</div></div></div>";
+      } else {
+          // Technique Descriptions
+          const techDescriptions = {
+              "Email Extraction": "Scans the source code using regex patterns to identify valid email formats (e.g., user@domain.com).",
+              "IP Address Discovery": "Scans the source code for IPv4 and IPv6 patterns to identify hardcoded IP addresses which may indicate internal network exposure.",
+              "API Key & Credential Detection": "Uses high-entropy analysis and specific signature matching to detect potential secrets, API keys, tokens, and passwords.",
+              "Comment Analysis": "Parses code comments (//, /* */) to find TODOs, FIXMEs, and other potentially sensitive developer notes.",
+              "DOM-based vulnerability analysis": "Analyzes JavaScript code for dangerous sinks (e.g., innerHTML, eval, document.write) and sources that could lead to Cross-Site Scripting (XSS).",
+              "Dependency and supply-chain analysis": "Identifies known third-party libraries and frameworks (e.g., jQuery, React) to check for outdated or vulnerable versions.",
+              "Obfuscation and deobfuscation analysis": "Detects signs of code obfuscation (e.g., packed code, hex encoding) and source map references.",
+              "Abstract Syntax Tree (AST) analysis": "Parses the code structure (AST) to find complex security issues and data flows that regex matching might miss."
+          };
+
+          Object.keys(groups).sort().forEach(tech => {
+              const description = techDescriptions[tech] || "Analyzes the code to identify security relevant patterns.";
+              const descHtml = `<div style="padding: 0 15px 10px 15px; color: var(--muted); font-size: 0.9em; font-style: italic; border-bottom: 1px solid var(--border-color); margin-bottom: 10px;">
+                  <i class="fas fa-info-circle"></i> <strong>How it works:</strong> ${escapeHtml(description)}
+              </div>`;
+              
+              // We need to inject the description into the group
+              // Since buildFindingGroup returns a string, we can modify it or pass a description param
+              // Let's modify the string since buildFindingGroup is generic
+              
+              let groupHtml = buildFindingGroup("Technique: " + tech, "fas fa-microscope", groups[tech]);
+              
+              // Insert description after title
+              // The title ends with </h3>
+              groupHtml = groupHtml.replace('</h3>', '</h3>' + descHtml);
+              
+              html += groupHtml;
+          });
+      }
+  }
+
   if (!html) {
     html = "<p style='padding:1rem; color:var(--muted);'>No findings for this category.</p>";
   }
@@ -814,6 +894,7 @@ async function performAnalysis(payload, isFile = false) {
   setLoading(true, "Initializing analysis...");
   CURRENT_RESULTS = [];
   CURRENT_FILE_ID = null;
+  CURRENT_FILTER = "all";
   $("files-grid").innerHTML = "";
   $("findings-content").innerHTML = "";
   $("backToFiles")?.classList.add("hidden");
@@ -909,20 +990,21 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* Filters */
-  const filterBtns = document.querySelectorAll(".filter-btn");
-  filterBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      // Update active state
-      filterBtns.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      
-      // Update filter
-      CURRENT_FILTER = btn.dataset.filter || "all";
-      
-      // Re-render
-      renderSelectedFile();
-    });
-  });
+  window.handleFilterClick = function(btn) {
+    const filter = btn.getAttribute("data-filter");
+    
+    // Update UI
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    // Update Global Filter
+    window.CURRENT_FILTER = filter;
+    
+    // Re-render
+    if (typeof renderSelectedFile === 'function') {
+        renderSelectedFile();
+    }
+  };
 
   /* Single URL */
   const analyzeBtn = $("analyzeBtn");

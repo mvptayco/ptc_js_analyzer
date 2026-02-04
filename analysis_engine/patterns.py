@@ -81,6 +81,14 @@ class SecurityPatterns:
             (r'\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b', 'Email Address', True),
         ]
         
+        # IP Address patterns
+        self.ip_patterns = [
+            # IPv4 - strict matching to avoid version numbers etc
+            (r'\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b', 'IPv4 Address', True),
+            # IPv6 - basic matching
+            (r'\b([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}\b', 'IPv6 Address', True),
+        ]
+        
         # Comments
         self.comment_patterns = [
             (r'//\s*(TODO|FIXME|XXX|HACK|BUG|NOTE|SECURITY|DEPRECATED|WARNING|TEMP)', 'Interesting Comment', True),
@@ -227,7 +235,50 @@ class SecurityPatterns:
             (r'path\s*[:=]\s*["\']([^"\']+)["\']', 'Path Variable'),
             (r'dir\s*[:=]\s*["\']([^"\']+)["\']', 'Directory Variable'),
             (r'["\']([a-zA-Z0-9_\-/]+\.(js|json|html|css|png|jpg|svg))["\']', 'File Path'),
+            (r'["\'](/etc/[a-zA-Z0-9_\-/]+)["\']', 'System Path (Linux)'),
+            (r'["\']([C-Z]:\\[a-zA-Z0-9_\\\-]+)["\']', 'System Path (Windows)'),
+            (r'["\'](/var/[a-zA-Z0-9_\-/]+)["\']', 'System Path (Var)'),
+            (r'["\'](/home/[a-zA-Z0-9_\-/]+)["\']', 'Home Directory Path'),
         ]
+
+        # Server Info patterns
+        self.server_info_patterns = [
+            (r'["\'](X-Powered-By)\s*[:=]\s*([^"\']+)["\']', 'Server Header (X-Powered-By)', True),
+            (r'["\'](Server)\s*[:=]\s*([^"\']+)["\']', 'Server Header (Server)', True),
+            (r'["\'](Apache/[0-9\.]+)["\']', 'Apache Version', True),
+            (r'["\'](Nginx/[0-9\.]+)["\']', 'Nginx Version', True),
+            (r'["\'](IIS/[0-9\.]+)["\']', 'IIS Version', True),
+            (r'["\'](PHP/[0-9\.]+)["\']', 'PHP Version', True),
+            (r'["\'](Werkzeug/[0-9\.]+)["\']', 'Werkzeug Version', True),
+        ]
+
+        # Library/Dependency Patterns
+        self.library_patterns = [
+            (r'jQuery\s*v?([0-9]+\.[0-9]+\.[0-9]+)', 'jQuery Version', True),
+            (r'React\s*v?([0-9]+\.[0-9]+\.[0-9]+)', 'React Version', True),
+            (r'Vue\s*v?([0-9]+\.[0-9]+\.[0-9]+)', 'Vue.js Version', True),
+            (r'AngularJS\s*v?([0-9]+\.[0-9]+\.[0-9]+)', 'AngularJS Version', True),
+            (r'Bootstrap\s*v?([0-9]+\.[0-9]+\.[0-9]+)', 'Bootstrap Version', True),
+            (r'Lodash\s*v?([0-9]+\.[0-9]+\.[0-9]+)', 'Lodash Version', True),
+            (r'Moment\.js\s*v?([0-9]+\.[0-9]+\.[0-9]+)', 'Moment.js Version', True),
+            (r'axios\s*v?([0-9]+\.[0-9]+\.[0-9]+)', 'Axios Version', True),
+            (r'["\'](react)["\']\s*:', 'React Dependency', False),
+            (r'["\'](vue)["\']\s*:', 'Vue Dependency', False),
+            (r'["\'](jquery)["\']\s*:', 'jQuery Dependency', False),
+            (r'window\.jQuery\s*=', 'jQuery Global', True),
+            (r'window\.React\s*=', 'React Global', True),
+            (r'window\.Vue\s*=', 'Vue Global', True),
+        ]
+
+        # Obfuscation & Source Map Patterns
+        self.obfuscation_patterns = [
+            (r'//#\s*sourceMappingURL=([^\s]+)', 'Source Map (v3)', True),
+            (r'//@\s*sourceMappingURL=([^\s]+)', 'Source Map (Legacy)', True),
+            (r'eval\(function\(p,a,c,k,e,d\)', 'Packed/Obfuscated Code (Dean Edwards)', True),
+            (r'var\s+_0x[a-f0-9]+', 'Obfuscated Variable (_0x...)', False),
+            (r'\\x[0-9a-f]{2}\\x[0-9a-f]{2}\\x[0-9a-f]{2}', 'Hex Encoded Strings', False),
+        ]
+
 
         # Common CSS properties to filter out
         self.css_props = {

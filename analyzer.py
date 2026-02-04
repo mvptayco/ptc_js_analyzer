@@ -16,6 +16,7 @@ import urllib3
 from analysis_engine.models import AnalysisResult
 from analysis_engine.patterns import SecurityPatterns
 from analysis_engine.extractors import PatternExtractor
+from analysis_engine.ast_analyzer import ASTAnalyzer
 from analysis_engine.headers import (
     analyze_server_info, 
     analyze_csp, 
@@ -35,7 +36,13 @@ class JavaScriptAnalyzer:
         # Initialize patterns and extractor
         self.security_patterns = SecurityPatterns()
         self.extractor = PatternExtractor(self.security_patterns)
+        self.ast_analyzer = ASTAnalyzer()
         self.smart_filter = SmartFilter()
+        # Use session for connection pooling (performance)
+        self.session = requests.Session()
+        adapter = requests.adapters.HTTPAdapter(pool_connections=20, pool_maxsize=20, max_retries=1)
+        self.session.mount('http://', adapter)
+        self.session.mount('https://', adapter)
 
     def fetch_js_file(self, url: str) -> Tuple[Optional[str], Optional[str], Optional[Dict[str, str]], Optional[str]]:
         """
@@ -54,7 +61,7 @@ class JavaScriptAnalyzer:
                 url = url.replace('0.0.0.0', 'localhost')
             
             headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
                 'Accept-Language': 'en-US,en;q=0.9',
                 'Accept-Encoding': 'gzip, deflate, br',
@@ -65,11 +72,14 @@ class JavaScriptAnalyzer:
                 'Sec-Fetch-Site': 'none',
                 'Sec-Fetch-User': '?1',
                 'Cache-Control': 'max-age=0',
+                'Referer': url, # Often required by internal sites
+                'Origin': f"{urlparse(url).scheme}://{urlparse(url).netloc}"
             }
             
-            # Timeout 5s (reduced from 10s for better performance)
+            # Timeout 20s (increased for slow private networks)
             # stream=True allows us to get the IP from the connection
-            response = requests.get(url, headers=headers, timeout=5, verify=False, stream=True, allow_redirects=True)
+            # Use session instead of requests.get for connection reuse
+            response = self.session.get(url, headers=headers, timeout=20, verify=False, stream=True, allow_redirects=True)
             
             # Capture headers
             headers_dict = dict(response.headers)
@@ -204,6 +214,14 @@ class JavaScriptAnalyzer:
         try:
             api_keys = self.extractor.find_patterns(content, self.security_patterns.api_key_patterns)
             
+            # Add Entropy Analysis
+            try:
+                entropy_findings = self.extractor.find_high_entropy_strings(content)
+                if entropy_findings:
+                    api_keys.extend(entropy_findings)
+            except Exception as e:
+                errors.append(f"Error in entropy analysis: {str(e)}")
+            
             # Extract directory from URL and add to API keys
             try:
                 parsed_url = urlparse(url)
@@ -244,6 +262,15 @@ class JavaScriptAnalyzer:
         
         try:
             emails = self.extractor.find_patterns(content, self.security_patterns.email_patterns)
+            
+            # Add IP Addresses (Information Disclosure)
+            try:
+                ips = self.extractor.find_patterns(content, self.security_patterns.ip_patterns)
+                if ips:
+                    emails.extend(ips)
+            except Exception as e:
+                errors.append(f"Error analyzing IPs: {str(e)}")
+                
         except Exception as e:
             errors.append(f"Error analyzing emails: {str(e)}")
             emails = []
@@ -266,6 +293,34 @@ class JavaScriptAnalyzer:
             errors.append(f"Error analyzing XSS functions: {str(e)}")
             xss_functions = []
             
+        # AST Static Analysis (Section 1 & 5 & 6)
+        try:
+            # PERFORMANCE OPTIMIZATION: Skip AST for large files (>1MB)
+            # AST parsing on large minified bundles is extremely slow and CPU intensive.
+            # Regex patterns (above) will still catch most secrets/patterns.
+            if file_size > 1024 * 1024:  # 1MB limit
+                errors.append(f"Skipped AST analysis for large file ({file_size/1024/1024:.2f}MB). Regex analysis still performed.")
+            else:
+                ast_findings = self.ast_analyzer.analyze(content)
+                if ast_findings:
+                    # Distribute AST findings to relevant categories
+                    for finding in ast_findings:
+                        f_type = finding.get('type', '').lower()
+                        match_str = finding.get('match', '')
+                        
+                        if 'xss' in f_type or 'injection' in f_type or match_str in ['eval', 'innerHTML', 'outerHTML', 'document.write']:
+                            xss_vulnerabilities.append(finding)
+                        elif 'dangerous' in f_type or match_str in ['child_process', 'vm', 'fs', 'exec', 'spawn']:
+                            # Add to xss_functions (rename logic in UI handles display)
+                            # or create a new field if possible. For now, xss_functions is the closest fit for "Dangerous Functions"
+                            finding['category'] = 'Dangerous API'
+                            xss_functions.append(finding)
+                        else:
+                            # Fallback
+                            xss_functions.append(finding)
+        except Exception as e:
+            errors.append(f"Error in AST analysis: {str(e)}")
+
         try:
             api_endpoints = self.extractor.extract_api_endpoints(content, url)
         except Exception as e:
@@ -281,16 +336,44 @@ class JavaScriptAnalyzer:
         try:
             paths_directories = self.extractor.extract_paths(content)
             
-            # If it looks like HTML, try to extract script tags too
-            if '<html' in content.lower() or '<script' in content.lower() or '<!doctype html>' in content.lower():
+            # Add HTML scripts (if content looks like HTML)
+            if '<script' in content.lower():
                 html_scripts = self.extractor.extract_html_scripts(content, url)
-                # Convert to path format
-                for script in html_scripts:
-                    paths_directories.append(script)
+                if html_scripts:
+                    paths_directories.extend(html_scripts)
                     
         except Exception as e:
             errors.append(f"Error extracting paths: {str(e)}")
             paths_directories = []
+            
+        # Dependency/Library Detection
+        try:
+            libraries = self.extractor.find_patterns(content, self.security_patterns.library_patterns)
+        except Exception as e:
+            errors.append(f"Error analyzing libraries: {str(e)}")
+            libraries = []
+            
+        # Source Map & Obfuscation
+        try:
+            obfuscation_findings = self.extractor.find_patterns(content, self.security_patterns.obfuscation_patterns)
+            
+            # Base64 Analysis (Merge into obfuscation findings as it's often related)
+            base64_findings = self.extractor.analyze_base64_strings(content)
+            if base64_findings:
+                obfuscation_findings.extend(base64_findings)
+                
+        except Exception as e:
+            errors.append(f"Error analyzing obfuscation: {str(e)}")
+            obfuscation_findings = []
+            
+        # Server Info
+        try:
+            server_info_findings = self.extractor.find_patterns(content, self.security_patterns.server_info_patterns)
+        except Exception as e:
+            errors.append(f"Error analyzing server info: {str(e)}")
+            server_info_findings = []
+
+        # Generate unique ID for this analysis
         
         try:
             if api_keys and api_endpoints:
@@ -310,7 +393,7 @@ class JavaScriptAnalyzer:
         except Exception:
             pass
             
-        return AnalysisResult(
+        result = AnalysisResult(
             url=url,
             api_keys=api_keys,
             credentials=credentials,
@@ -324,6 +407,9 @@ class JavaScriptAnalyzer:
             errors=errors,
             file_size=file_size,
             analysis_timestamp=datetime.now().isoformat(),
+            server_info_findings=server_info_findings,
+            libraries=libraries,
+            obfuscation_findings=obfuscation_findings,
             relevance_score=relevance_score
         )
         

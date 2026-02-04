@@ -94,7 +94,8 @@ def check_rate_limit():
     
     if not limiter.is_allowed(client_id):
         # API requests get JSON, Browser requests get HTML
-        if request.path.startswith("/api/") or request.accept_mimetypes.accept_json:
+        # Only return JSON if it's an API path, or if the client wants JSON and NOT HTML
+        if request.path.startswith("/api/") or (request.accept_mimetypes.accept_json and not request.accept_mimetypes.accept_html):
              return error_response("Rate limit exceeded. Please try again later.", 429)
         return render_template("429.html"), 429
 
@@ -104,7 +105,7 @@ def add_security_headers(response):
     """Add Content Security Policy and other security headers"""
     csp = (
         "default-src 'self'; "
-        "script-src 'self' https://js.puter.com; "
+        "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.puter.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; "
         "connect-src 'self' https://*.puter.com wss://*.puter.com; "
         "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; "
         "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; "
@@ -260,8 +261,8 @@ def analyze_urls(urls: List[str]) -> Dict[str, Any]:
             }
 
     # Parallel execution
-    # Use max_workers=10 for reasonable concurrency
-    with ThreadPoolExecutor(max_workers=10) as executor:
+    # Use max_workers=20 for faster concurrent crawling (optimized for private networks)
+    with ThreadPoolExecutor(max_workers=20) as executor:
         # Submit all tasks
         future_to_url = {
             executor.submit(process_url, (idx, url)): idx 

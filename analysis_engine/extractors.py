@@ -3,6 +3,8 @@ Analysis Engine Extractors
 Contains logic for extracting patterns, parameters, and endpoints
 """
 import re
+import math
+import base64
 from typing import List, Dict, Any, Tuple, Optional
 from urllib.parse import urlparse
 from analysis_engine.patterns import SecurityPatterns
@@ -14,6 +16,137 @@ class PatternExtractor:
         self.patterns = security_patterns
         self.css_props = self.patterns.css_props
         self.css_values_regex = self.patterns.css_values_regex
+
+    def calculate_shannon_entropy(self, data: str) -> float:
+        """Calculate Shannon entropy of a string"""
+        if not data:
+            return 0
+        entropy = 0
+        for x in range(256):
+            p_x = float(data.count(chr(x)))/len(data)
+            if p_x > 0:
+                entropy += - p_x*math.log(p_x, 2)
+        return entropy
+
+    def analyze_base64_strings(self, content: str) -> List[Dict[str, Any]]:
+        """Find and decode base64 strings to check for secrets"""
+        findings = []
+        if not content:
+            return findings
+            
+        lines = content.split('\n')
+        
+        # Regex for potential base64 strings
+        # Length multiple of 4, a-zA-Z0-9+/ and padding =
+        # Minimum length 20 to avoid false positives with short random strings
+        base64_pattern = re.compile(r'["\'](?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})["\']')
+        
+        matches = base64_pattern.finditer(content)
+        seen = set()
+        
+        for match in matches:
+            full_match = match.group(0)
+            candidate = full_match.strip('"\'')
+            
+            if len(candidate) < 20 or candidate in seen:
+                continue
+            seen.add(candidate)
+            
+            try:
+                decoded_bytes = base64.b64decode(candidate)
+                # Try to decode as utf-8, ignore if binary
+                try:
+                    decoded_str = decoded_bytes.decode('utf-8')
+                    # Check if decoded string looks interesting
+                    if not decoded_str.isprintable():
+                        continue
+                        
+                    # Calculate entropy of decoded string
+                    entropy = self.calculate_shannon_entropy(decoded_str)
+                    
+                    if entropy > 4.0 or "key" in decoded_str.lower() or "secret" in decoded_str.lower() or "password" in decoded_str.lower():
+                        start_pos = match.start()
+                        line_num = content[:start_pos].count('\n') + 1
+                        
+                        start_line = max(0, line_num - 3)
+                        end_line = min(len(lines), line_num + 3)
+                        context = '\n'.join(lines[start_line:end_line])
+                        
+                        finding = {
+                            'type': 'Base64 Encoded Secret',
+                            'match': candidate,
+                            'line': int(line_num),
+                            'line_content': lines[line_num - 1].strip() if line_num <= len(lines) else "",
+                            'context': context,
+                            'context_start_line': int(start_line + 1),
+                            'context_end_line': int(end_line),
+                            'confidence': 'High',
+                            'technique': 'Base64 Analysis',
+                            'detection_logic': f"Identified Base64 string and decoded it. Decoded content: '{decoded_str[:50]}...'"
+                        }
+                        findings.append(finding)
+                except UnicodeDecodeError:
+                    continue
+            except Exception:
+                continue
+                
+        return findings
+
+    def find_high_entropy_strings(self, content: str, threshold: float = 4.5, min_length: int = 20) -> List[Dict[str, Any]]:
+        """Find strings with high entropy (potential secrets)"""
+        findings = []
+        if not content:
+            return findings
+            
+        lines = content.split('\n')
+        
+        # Regex for string literals (single or double quoted)
+        # We look for fairly long strings that might be keys
+        string_pattern = re.compile(r'["\']([a-zA-Z0-9_\-\/+]{20,})["\']')
+        
+        matches = string_pattern.finditer(content)
+        seen_strings = set()
+        
+        for match in matches:
+            candidate = match.group(1)
+            
+            # Skip if already processed
+            if candidate in seen_strings:
+                continue
+            seen_strings.add(candidate)
+            
+            # Skip common false positives
+            if ' ' in candidate: continue
+            if candidate.startswith('http'): continue  # URLs handled elsewhere
+            if candidate.startswith('data:image'): continue # Base64 images
+            
+            entropy = self.calculate_shannon_entropy(candidate)
+            
+            if entropy > threshold:
+                start_pos = match.start()
+                line_num = content[:start_pos].count('\n') + 1
+                
+                # Context
+                start_line = max(0, line_num - 3)
+                end_line = min(len(lines), line_num + 3)
+                context = '\n'.join(lines[start_line:end_line])
+                
+                finding = {
+                    'type': 'High Entropy String',
+                    'match': candidate,
+                    'line': int(line_num),
+                    'line_content': lines[line_num - 1].strip() if line_num <= len(lines) else "",
+                    'context': context,
+                    'context_start_line': int(start_line + 1),
+                    'context_end_line': int(end_line),
+                    'confidence': 'Medium',
+                    'technique': 'Entropy Analysis',
+                    'entropy': round(entropy, 2),
+                    'detection_logic': f"Calculated Shannon Entropy: {round(entropy, 2)} (Threshold: {threshold}). High entropy indicates randomness typical of secrets."
+                }
+                findings.append(finding)
+                
+        return findings
 
     def _is_subdomain(self, url: str, base_url: str) -> bool:
         """Check if url is a subdomain of base_url"""
@@ -160,6 +293,30 @@ class PatternExtractor:
                         
                         # Calculate confidence
                         confidence = "Medium"
+                        technique = "Pattern / signature matching"
+                        
+                        # Determine technique based on label/type
+                        if any(t in str(label) for t in ['innerHTML', 'outerHTML', 'document.write', 'eval', 'Function', 'location', 'setAttribute', 'execCommand']):
+                            technique = "DOM-based vulnerability analysis"
+                        
+                        # Granular Pattern Matching Categories
+                        elif 'Email' in str(label):
+                            technique = "Email Extraction"
+                        elif any(t in str(label) for t in ['IPv4', 'IPv6', 'IP Address']):
+                            technique = "IP Address Discovery"
+                        elif any(t in str(label) for t in ['Key', 'Token', 'Secret', 'SID', 'Auth', 'Password', 'Credential', 'Username']):
+                            technique = "API Key & Credential Detection"
+                        elif 'Comment' in str(label):
+                            technique = "Comment Analysis"
+
+                        # Dependencies
+                        elif any(t in str(label) for t in ['jQuery', 'React', 'Vue', 'Angular', 'Bootstrap', 'Lodash', 'Moment', 'Dependency']):
+                            technique = "Dependency and supply-chain analysis"
+                            
+                        # Obfuscation
+                        elif any(t in str(label) for t in ['Source Map', 'Obfuscated', 'Packed', 'Hex Encoded']):
+                            technique = "Obfuscation and deobfuscation analysis"
+                        
                         if isinstance(is_strict, bool):
                             confidence = "High" if is_strict else "Medium"
                         elif isinstance(is_strict, str):
@@ -178,6 +335,8 @@ class PatternExtractor:
                             'context_start_line': int(start_line + 1),
                             'context_end_line': int(end_line),
                             'confidence': confidence,
+                            'technique': technique,
+                            'detection_logic': f"Matched specific regex pattern for '{label}' in source code."
                         }
                         
                         if len(pattern_info) > 2 and isinstance(pattern_info[2], str):
@@ -238,6 +397,7 @@ class PatternExtractor:
                     'line': line_num,
                     'full_match': match.group(0)[:150],
                     'line_content': lines[line_num - 1].strip() if line_num <= len(lines) else "",
+                    'detection_logic': f"Matched API pattern: {method} request to '{url_path}'"
                 }
                 
                 endpoints.append(endpoint)
@@ -348,132 +508,114 @@ class PatternExtractor:
                             'Event Handler Parameters',
                             'EventListener Parameters',
                             'EventListener Arrow Parameters',
-                            'Promise Callback Parameters',
-                            'Array Method Parameters'
                         }
-                        if label in short_name_labels:
-                            if param_name and len(param_name) <= 2:
-                                continue
-                            if param_name and param_name.lower() in {'e', 'ev', 'evt', 'x', 'y', 'i', 'j', 'k', '_'}:
-                                continue
                         
-                        if label in {'URL Query Parameter', 'Query Parameter', 'URL with Query Parameters', 'URL with Multiple Parameters'}:
-                            if not (param_name and param_value):
-                                continue
-
-                        # Get exact code snippet
-                        line_content = lines[line_num - 1] if line_num <= len(lines) else ""
-                        # Truncate very long lines
-                        if len(line_content) > 500:
-                            line_content = line_content[:200] + "..." + line_content[-200:]
-                        
-                        # Get context for parameters (like other findings)
-                        start_line = max(0, line_num - 5 - 1)
-                        end_line = min(len(lines), line_num + 5)
-                        context_lines_list = lines[start_line:end_line]
-                        context = '\n'.join(context_lines_list)
-                        
-                        # For very long lines (minified), truncate context
-                        if len(context) > 1000:
-                            # Show snippet around the match
-                            match_start = max(0, start_pos - 200)
-                            match_end = min(len(content), start_pos + len(full_match) + 200)
-                            context = content[match_start:match_end]
-                        
+                        # Add parameter
                         param = {
                             'type': label,
-                            'parameter': param_text,
-                            'param_name': param_name[:100] if param_name else None,
-                            'param_value': param_value,
+                            'name': param_name if param_name else param_text[:50],
+                            'match': param_text[:100],
                             'line': line_num,
-                            'full_match': full_match,
-                            'line_content': line_content,
-                            'context': context,
-                            'context_start_line': start_line + 1,
-                            'context_end_line': end_line,
+                            'line_content': lines[line_num - 1].strip() if line_num <= len(lines) else "",
+                            'detection_logic': f"Extracted parameter using regex: {label}"
                         }
-                        
                         params.append(param)
-                    except Exception as e:
-                        # Skip problematic matches
+                    except Exception:
                         continue
-            except Exception as e:
-                # Skip problematic patterns
+            except Exception:
                 continue
-        
-        # Remove duplicates based on line and parameter
-        seen = set()
+                
+        # Deduplication
         unique_params = []
-        for param in params:
-            key = (param['line'], param['parameter'])
+        seen = set()
+        for p in params:
+            key = (p['name'], p['line'], p['type'])
             if key not in seen:
                 seen.add(key)
-                unique_params.append(param)
-        
+                unique_params.append(p)
+                
         return unique_params
-    
+
     def extract_paths(self, content: str) -> List[Dict[str, Any]]:
         """Extract paths and directories"""
         paths = []
+        if not content:
+            return paths
+            
         lines = content.split('\n')
         
         for pattern, label in self.patterns.path_patterns:
-            matches = re.finditer(pattern, content, re.MULTILINE)
+            try:
+                matches = re.finditer(pattern, content, re.MULTILINE | re.IGNORECASE)
+                for match in matches:
+                    try:
+                        start_pos = match.start()
+                        line_num = content[:start_pos].count('\n') + 1
+                        
+                        full_match = match.group(0)
+                        path_val = match.group(1) if match.lastindex >= 1 else full_match
+                        
+                        # Filter false positives
+                        if any(fp in path_val.lower() for fp in ['example.com', 'localhost', 'placeholder', 'undefined', 'null']):
+                            continue
+                            
+                        # Filter CSS values
+                        if re.match(self.css_values_regex, path_val.strip("'\""), re.IGNORECASE):
+                            continue
+
+                        path_item = {
+                            'type': label,
+                            'path': path_val[:200],
+                            'match': full_match[:200],
+                            'line': line_num,
+                            'line_content': lines[line_num - 1].strip() if line_num <= len(lines) else "",
+                            'detection_logic': f"Matched path pattern: {label}"
+                        }
+                        paths.append(path_item)
+                    except Exception:
+                        continue
+            except Exception:
+                continue
+                
+        # Deduplication
+        unique_paths = []
+        seen = set()
+        for p in paths:
+            key = (p['path'], p['line'], p['type'])
+            if key not in seen:
+                seen.add(key)
+                unique_paths.append(p)
+                
+        return unique_paths
+
+    def extract_html_scripts(self, content: str, base_url: str = None) -> List[Dict[str, Any]]:
+        """Extract script sources from HTML content"""
+        scripts = []
+        try:
+            # Simple regex for script src
+            matches = re.finditer(r'<script[^>]+src=["\']([^"\']+)["\']', content, re.IGNORECASE)
+            lines = content.split('\n')
+            
             for match in matches:
+                src = match.group(1)
                 start_pos = match.start()
                 line_num = content[:start_pos].count('\n') + 1
                 
-                path_text = match.group(1) if match.lastindex >= 1 else match.group(0)
-                
-                # Filter out common false positives (unless it's explicitly a URL pattern)
-                if label != 'Hardcoded URL' and any(fp in path_text.lower() for fp in ['http://', 'https://', 'www.', 'example.com']):
+                # Filter subdomains if base_url provided
+                if base_url and self._is_subdomain(src, base_url):
                     continue
-                
-                path = {
-                    'type': label,
-                    'path': path_text,
+                    
+                script_item = {
+                    'type': 'Script Source',
+                    'path': src,
+                    'match': match.group(0),
                     'line': line_num,
-                    'full_match': match.group(0),
                     'line_content': lines[line_num - 1].strip() if line_num <= len(lines) else "",
+                    'detection_logic': "Extracted 'src' attribute from <script> tag"
                 }
-                
-                paths.append(path)
-        
-        # Remove duplicates
-        seen = set()
-        unique_paths = []
-        for path in paths:
-            key = (path['path'], path['line'])
-            if key not in seen:
-                seen.add(key)
-                unique_paths.append(path)
-        
-        return unique_paths
-    
-    def extract_html_scripts(self, content: str, base_url: str) -> List[Dict[str, Any]]:
-        """Extract script sources from HTML content"""
-        scripts = []
-        
-        # Simple regex for <script src="...">
-        # Covers " ' and no quotes, and different attributes order
-        src_pattern = r'<script[^>]+src\s*=\s*["\']([^"\']+)["\']'
-        matches = re.finditer(src_pattern, content, re.IGNORECASE)
-        
-        for match in matches:
-            src = match.group(1)
-            
-            # Strict Domain Matching: Skip subdomains
-            if base_url and self._is_subdomain(src, base_url):
-                continue
-
-            # Normalize URL if needed (handle relative paths)
-            # For now, just report the raw path, the user can see it
-            scripts.append({
-                'path': src,
-                'line': content[:match.start()].count('\n') + 1,
-                'type': 'Script Reference',
-                'confidence': 'High',
-                'line_content': match.group(0)
-            })
+                scripts.append(script_item)
+        except Exception:
+            pass
             
         return scripts
+

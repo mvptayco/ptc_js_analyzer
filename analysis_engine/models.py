@@ -21,6 +21,9 @@ class AnalysisResult:
     file_size: int
     analysis_timestamp: str
     server_info: Optional[Dict[str, Any]] = None
+    server_info_findings: Optional[List[Dict[str, Any]]] = None
+    libraries: Optional[List[Dict[str, Any]]] = None
+    obfuscation_findings: Optional[List[Dict[str, Any]]] = None
     csp_info: Optional[Dict[str, Any]] = None
     ip_address: Optional[str] = None
     cloudflare_analysis: Optional[Dict[str, Any]] = None

@@ -1,5 +1,27 @@
-/* ============ RESET ============ */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* ============ GLOBAL RESET & DEFAULTS ============ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+button, .btn, .btn-primary, .btn-secondary, .filter-btn {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  user-select: none !important; /* Prevent text selection cursor */
+}
+
+/* Ensure children of buttons don't capture pointer events (prevents flicker/dead zones) */
+button *, .btn *, .filter-btn *, #backToFiles * {
+  pointer-events: none !important;
+}
+
+/* Prevent headers from blocking clicks if they overlap */
+h1, h2, h3, h4, h5, h6 {
+  pointer-events: none;
+  position: relative;
+  z-index: 1; 
+}
+
+
 
 /* ============ TOKENS ============ */
 :root{
@@ -16,6 +38,10 @@
 
   --shadow: 0 18px 55px rgba(0,0,0,.45);
   --radius: 18px;
+
+  --modal-bg: #151a23;
+  --input-bg: rgba(255,255,255,0.05);
+  --surface-bg: rgba(255,255,255,0.08);
 }
 
 html[data-theme="light"]{
@@ -26,6 +52,10 @@ html[data-theme="light"]{
   --text:#111827;
   --muted:#4b5563;
   --shadow: 0 18px 45px rgba(17,24,39,.12);
+  
+  --modal-bg: #ffffff;
+  --input-bg: rgba(0,0,0,0.05);
+  --surface-bg: rgba(0,0,0,0.05);
 }
 
 /* ============ ANIMATIONS ============ */
@@ -49,6 +79,7 @@ html[data-theme="light"]{
 body{
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
   color: var(--text);
+  line-height: 1.7; /* Increased line spacing */
   min-height: 100vh;
   padding: 20px;
   background:
@@ -280,7 +311,8 @@ code{
   padding: 24px;
   margin-bottom: 24px;
   position: relative;
-  overflow: hidden;
+  z-index: 50; /* Increased to ensure content is interactive */
+  overflow: visible; 
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   animation: fadeIn 0.4s ease-out;
 }
@@ -353,7 +385,7 @@ input, textarea, select {
   width: 100%;
   padding: 12px 16px;
   border-radius: 12px;
-  background: rgba(255,255,255,0.05);
+  background: var(--input-bg);
   border: 1px solid var(--border);
   color: var(--text);
   font-family: inherit;
@@ -399,7 +431,9 @@ label {
 .modal.hidden {
   opacity: 0;
   visibility: hidden;
-  pointer-events: none;
+  pointer-events: none !important;
+  display: none !important;
+  z-index: -9999 !important;
 }
 .modal-panel {
   position: relative;
@@ -408,7 +442,7 @@ label {
   max-width: 760px;
   max-height: 90vh;
   overflow-y: auto;
-  background: #151a23;
+  background: var(--modal-bg);
   border: 1px solid var(--border);
   border-radius: 24px;
   box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
@@ -440,7 +474,7 @@ label {
   justify-content: center;
   border-radius: 10px;
   border: 1px solid var(--border);
-  background: rgba(255,255,255,0.08);
+  background: var(--surface-bg);
   color: var(--text);
   cursor: pointer !important;
   transition: all 0.2s ease;
@@ -479,7 +513,7 @@ label {
 .file-label { display: inline-flex; align-items: center; gap: 10px; border: 1px dashed var(--border); padding: 12px 16px; border-radius: 12px; color: var(--muted); cursor: pointer; }
 .file-label input[type="file"] { display: none; }
 .file-name { margin-top: 8px; color: var(--muted); }
-.helper-note { display: flex; align-items: center; gap: 10px; margin-top: 16px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: rgba(255,255,255,0.05); color: var(--muted); }
+.helper-note { display: flex; align-items: center; gap: 10px; margin-top: 16px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--input-bg); color: var(--muted); }
 code { font-family: "SF Mono","Monaco","Inconsolata","Fira Mono","Droid Sans Mono","Source Code Pro",monospace; font-size: 0.9rem; background: rgba(0,0,0,0.2); color: var(--text); padding: 2px 6px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06); }
 .modal-field { margin-bottom: 16px; }
 .modal-label { display: block; font-weight: 600; margin-bottom: 8px; }
@@ -524,7 +558,7 @@ code { font-family: "SF Mono","Monaco","Inconsolata","Fira Mono","Droid Sans Mon
 }
 
 .finding-item {
-  background: rgba(255,255,255,0.08);
+  background: var(--surface-bg);
   border: 1px solid var(--border);
   border-radius: 12px;
   padding: 16px;
@@ -594,6 +628,7 @@ code { font-family: "SF Mono","Monaco","Inconsolata","Fira Mono","Droid Sans Mon
 .meta-tag.confidence-high { color: #ff453a; border-color: rgba(255, 69, 58, 0.2); background: rgba(255, 69, 58, 0.1); }
 .meta-tag.confidence-medium { color: #ff9f0a; border-color: rgba(255, 159, 10, 0.2); background: rgba(255, 159, 10, 0.1); }
 .meta-tag.confidence-low { color: #30d158; border-color: rgba(48, 209, 88, 0.2); background: rgba(48, 209, 88, 0.1); }
+html[data-theme="light"] .meta-tag.confidence-low { color: #0d5222; border-color: rgba(13, 82, 34, 0.2); background: rgba(13, 82, 34, 0.1); }
 .meta-tag.confidence-critical { color: #ff0000; border-color: rgba(255, 0, 0, 0.2); background: rgba(255, 0, 0, 0.1); font-weight: bold; }
 
 
@@ -615,21 +650,45 @@ code { font-family: "SF Mono","Monaco","Inconsolata","Fira Mono","Droid Sans Mon
   padding-bottom: 16px;
   margin-bottom: 28px;
   scrollbar-width: thin;
+  position: relative;
+  z-index: 2001;
+  pointer-events: auto !important;
 }
 .filter-btn {
+  display: inline-flex; /* Ensure proper box model */
+  align-items: center;
+  justify-content: center;
   white-space: nowrap;
-  padding: 10px 18px;
+  padding: 12px 20px; /* Larger click area */
   border-radius: 10px;
   background: rgba(255,255,255,0.10);
   border: 1px solid var(--border);
   color: var(--muted);
-  cursor: pointer;
-  transition: all 0.2s ease;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smoother transition */
   font-size: 0.95rem;
+  position: relative;
+  z-index: 100; /* Safe z-index */
+  pointer-events: auto !important;
 }
+/* Expanded Hit Area REMOVED to prevent overlaps - using padding instead */
+/*.filter-btn::after {
+    content: '';
+    position: absolute;
+    top: -4px; bottom: -4px; left: -4px; right: -4px;
+    z-index: 2147483647;
+    cursor: pointer;
+}*/
 .filter-btn:hover {
-  background: rgba(255,255,255,0.14);
-  color: var(--text);
+  background: rgba(255,255,255,0.18); /* Brighter hover */
+  /* transform removed to prevent layout/visual glitches */
+  color: #fff; /* Brighter text */
+  /* box-shadow removed */
+  border-color: rgba(255,255,255,0.2);
+}
+.filter-btn:active {
+  transform: translateY(0) scale(0.98); /* Press down */
+  box-shadow: none;
 }
 .filter-btn.active {
   background: var(--brand);
@@ -637,6 +696,38 @@ code { font-family: "SF Mono","Monaco","Inconsolata","Fira Mono","Droid Sans Mon
   border-color: var(--brand);
   box-shadow: 0 4px 12px rgba(255,101,0,0.3);
 }
+
+/* Specific highlight removed per user request */
+/* Light Mode Hover Fix for Filter Buttons */
+html[data-theme="light"] .filter-btn {
+  background: rgba(0,0,0,0.05);
+  border-color: rgba(0,0,0,0.1);
+  color: var(--muted);
+}
+
+html[data-theme="light"] .filter-btn:hover {
+  background: rgba(0,0,0,0.1); /* Darken slightly */
+  color: var(--text); /* Dark text for visibility */
+  border-color: rgba(0,0,0,0.2);
+}
+
+html[data-theme="light"] .filter-btn.active {
+  color: #fff; /* Keep white text for active brand background */
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+/* Suppress hover effects for Recommendations tab - REMOVED per user request to restore it */
+/* 
+.filter-btn[data-filter="recommendations"]:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    background: rgba(255,255,255,0.10) !important;
+    border-color: var(--border) !important;
+    color: var(--muted) !important;
+} 
+*/
+
 
 /* ============ LOADING ============ */
 .loading-spinner {
@@ -663,26 +754,58 @@ code { font-family: "SF Mono","Monaco","Inconsolata","Fira Mono","Droid Sans Mon
 /* ============ RESULTS UI ============ */
 .results-header { 
   margin-bottom: 24px;
-  padding: 16px 8px; /* Added horizontal padding */
+  padding: 16px 8px;
+  position: relative;
+  z-index: 50; /* Matches card z-index */
+  pointer-events: none; /* Let clicks pass through container */
+  /* isolation: isolate; REMOVED to prevent z-index trapping */
+  overflow: visible !important; /* Ensure nothing is clipped */
 }
 .results-topbar { 
   display:flex; 
   align-items:center; 
   justify-content:space-between; 
-  gap:12px;
+  gap:24px; /* Increased gap */
+  margin-bottom: 24px; 
+  position: relative;
+  z-index: 2001;
+  pointer-events: auto !important;
+  overflow: visible !important;
 }
 .results-topbar h2 { 
   margin: 0; 
-  line-height: 1; 
+  line-height: 1.2; 
   padding: 0;
   display: flex;
   align-items: center;
+  pointer-events: none; /* Ensure title doesn't block anything */
+}
+/* Back Button Removed */
+/* Expanded Hit Area REMOVED to prevent overlaps - using padding instead */
+/*#backToFiles::after {
+    content: '';
+    position: absolute;
+    top: -5px; bottom: -5px; left: -5px; right: -5px;
+    z-index: 2147483647;
+    cursor: pointer;
+}*/
+.filters {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  padding-bottom: 12px;
+  margin-bottom: 28px;
+  scrollbar-width: thin;
+  position: relative;
+  z-index: 2001;
+  pointer-events: auto !important;
 }
 .summary {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Increased min width */
-  gap: 16px; /* Increased gap */
-  margin-bottom: 24px; /* Increased margin */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
 }
 .stat-card {
   display:flex; align-items:center; gap:12px; /* Increased gap */
@@ -973,6 +1096,14 @@ html[data-theme="light"] .chat-model-select {
 html[data-theme="light"] .chat-model-select option {
   background-color: #ffffff;
   color: #111827;
+}
+
+/* Light Mode Toast Fix */
+html[data-theme="light"] .toast {
+  background: #ffffff;
+  color: var(--text);
+  border-color: rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .footer{

@@ -29,6 +29,7 @@ def analyze_server_info(headers: Optional[Dict[str, str]]) -> Optional[Dict[str,
     if powered_by:
         info['x_powered_by'] = powered_by
         
+    info['technique'] = 'HTTP Header Analysis'
     return info if info else None
 
 def analyze_csp(headers: Optional[Dict[str, str]]) -> Optional[Dict[str, Any]]:
@@ -44,14 +45,16 @@ def analyze_csp(headers: Optional[Dict[str, str]]) -> Optional[Dict[str, Any]]:
             'is_present': False,
             'raw': None,
             'directives': {},
-            'weaknesses': ["CSP Header is missing"]
+            'weaknesses': ["CSP Header is missing"],
+            'technique': 'HTTP Header Analysis'
         }
         
     csp_info = {
         'is_present': True,
         'raw': csp_header,
         'directives': {},
-        'weaknesses': []
+        'weaknesses': [],
+        'technique': 'HTTP Header Analysis'
     }
     
     # Parse directives
@@ -108,7 +111,10 @@ def analyze_cloudflare(headers: Optional[Dict[str, str]], ip_address: Optional[s
     # Real implementation would check IP ranges. 
     # For now, we assume if headers are there, it's proxied.
     
-    return cf_info if cf_info['is_present'] else None
+    if cf_info['is_present']:
+        cf_info['technique'] = 'HTTP Header Analysis'
+        return cf_info
+    return None
 
 def analyze_rate_limit(headers: Optional[Dict[str, str]]) -> Optional[Dict[str, Any]]:
     """Analyze Rate Limiting information"""
@@ -118,7 +124,8 @@ def analyze_rate_limit(headers: Optional[Dict[str, str]]) -> Optional[Dict[str, 
     rl_info = {
         'is_present': False,
         'details': [],
-        'provider': 'Unknown'
+        'provider': 'Unknown',
+        'technique': 'HTTP Header Analysis'
     }
     
     # Check standard headers

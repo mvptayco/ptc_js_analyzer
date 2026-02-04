@@ -12,8 +12,9 @@
 
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
   <script src="https://js.puter.com/v2/"></script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=10.0" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=12.91" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -97,31 +98,31 @@
         <div class="results-header">
           <div class="results-topbar">
             <h2 id="results-title">Analysis Results</h2>
-            <button id="backToFiles" class="btn-secondary hidden" type="button">
-              <i class="fas fa-arrow-left" aria-hidden="true"></i> Back to Files
-            </button>
           </div>
 
           <div class="filters" role="toolbar" aria-label="Filter results">
-            <button class="filter-btn active" data-filter="all" type="button">All</button>
-            <button class="filter-btn" data-filter="api_keys" type="button">API Keys</button>
-            <button class="filter-btn" data-filter="credentials" type="button">Credentials</button>
-            <button class="filter-btn" data-filter="emails" type="button">Emails</button>
-            <button class="filter-btn" data-filter="xss" type="button">XSS Vulnerabilities</button>
-            <button class="filter-btn" data-filter="xss_functions" type="button">XSS Functions</button>
-            <button class="filter-btn" data-filter="api_endpoints" type="button">API Endpoints</button>
-            <button class="filter-btn" data-filter="parameters" type="button">Parameters</button>
-            <button class="filter-btn" data-filter="paths" type="button">Paths/Directories</button>
-            <button class="filter-btn" data-filter="comments" type="button">Comments</button>
-            <button class="filter-btn" data-filter="server_info" type="button">Server Info</button>
-            <button class="filter-btn" data-filter="recommendations" type="button">Recommendations</button>
+            <button class="filter-btn active" data-filter="all" type="button" onclick="handleFilterClick(this)">All</button>
+            <button class="filter-btn" data-filter="api_keys" type="button" onclick="handleFilterClick(this)">API Keys</button>
+            <button class="filter-btn" data-filter="credentials" type="button" onclick="handleFilterClick(this)">Credentials</button>
+            <button class="filter-btn" data-filter="emails" type="button" onclick="handleFilterClick(this)">Emails & IPs</button>
+            <button class="filter-btn" data-filter="xss" type="button" onclick="handleFilterClick(this)">XSS Vulnerabilities</button>
+            <button class="filter-btn" data-filter="xss_functions" type="button" onclick="handleFilterClick(this)">XSS Functions</button>
+            <button class="filter-btn" data-filter="api_endpoints" type="button" onclick="handleFilterClick(this)">API Endpoints</button>
+            <button class="filter-btn" data-filter="parameters" type="button" onclick="handleFilterClick(this)">Parameters</button>
+            <button class="filter-btn" data-filter="paths" type="button" onclick="handleFilterClick(this)">Paths/Directories</button>
+            <button class="filter-btn" data-filter="comments" type="button" onclick="handleFilterClick(this)">Comments</button>
+            <button class="filter-btn" data-filter="server_info" type="button" onclick="handleFilterClick(this)">Server Info</button>
+            <button class="filter-btn" data-filter="libraries" type="button" onclick="handleFilterClick(this)">Libraries</button>
+            <button class="filter-btn" data-filter="obfuscation" type="button" onclick="handleFilterClick(this)">Obfuscation</button>
+            <button class="filter-btn" data-filter="recommendations" type="button" onclick="handleFilterClick(this)">Recommendations</button>
+            <button class="filter-btn" data-filter="techniques" type="button" onclick="handleFilterClick(this)"><i class="fas fa-microscope"></i> Techniques Used</button>
           </div>
         </div>
 
         <div class="summary" role="region" aria-label="Summary of findings">
           <div class="stat-card"><i class="fas fa-key" aria-hidden="true"></i><div><span class="stat-value" id="stat-api-keys">0</span><span class="stat-label">API Keys</span></div></div>
           <div class="stat-card"><i class="fas fa-lock" aria-hidden="true"></i><div><span class="stat-value" id="stat-credentials">0</span><span class="stat-label">Credentials</span></div></div>
-          <div class="stat-card"><i class="fas fa-envelope" aria-hidden="true"></i><div><span class="stat-value" id="stat-emails">0</span><span class="stat-label">Emails</span></div></div>
+          <div class="stat-card"><i class="fas fa-envelope" aria-hidden="true"></i><div><span class="stat-value" id="stat-emails">0</span><span class="stat-label">Emails & IPs</span></div></div>
           <div class="stat-card"><i class="fas fa-triangle-exclamation" aria-hidden="true"></i><div><span class="stat-value" id="stat-xss">0</span><span class="stat-label">XSS Issues</span></div></div>
           <div class="stat-card"><i class="fas fa-code-branch" aria-hidden="true"></i><div><span class="stat-value" id="stat-endpoints">0</span><span class="stat-label">API Endpoints</span></div></div>
           <div class="stat-card"><i class="fas fa-shield-halved" aria-hidden="true"></i><div><span class="stat-value" id="stat-recommendations">0</span><span class="stat-label">Recommendations</span></div></div>
@@ -325,6 +326,6 @@
     </div>
   </noscript>
 
-  <script src="{{ url_for('static', filename='js/script.js') }}?v=9.4" defer></script>
+  <script src="{{ url_for('static', filename='js/script.js') }}?v=12.91" defer></script>
 </body>
 </html>
