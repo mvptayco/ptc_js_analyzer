@@ -4,6 +4,7 @@ Contains logic for extracting patterns, parameters, and endpoints
 """
 import re
 from typing import List, Dict, Any, Tuple, Optional
+from urllib.parse import urlparse
 from analysis_engine.patterns import SecurityPatterns
 
 class PatternExtractor:
@@ -13,6 +14,48 @@ class PatternExtractor:
         self.patterns = security_patterns
         self.css_props = self.patterns.css_props
         self.css_values_regex = self.patterns.css_values_regex
+
+    def _is_subdomain(self, url: str, base_url: str) -> bool:
+        """Check if url is a subdomain of base_url"""
+        if not base_url or not url:
+            return False
+            
+        try:
+            # Handle relative URLs - not subdomains
+            if not url.startswith(('http:', 'https:', '//')):
+                return False
+                
+            base_parsed = urlparse(base_url)
+            url_parsed = urlparse(url)
+            
+            base_domain = base_parsed.netloc.lower()
+            target_domain = url_parsed.netloc.lower()
+            
+            if not base_domain or not target_domain:
+                return False
+                
+            # Remove port if present
+            base_domain = base_domain.split(':')[0]
+            target_domain = target_domain.split(':')[0]
+            
+            # Remove www.
+            if base_domain.startswith('www.'):
+                base_domain = base_domain[4:]
+            if target_domain.startswith('www.'):
+                target_domain = target_domain[4:]
+                
+            # Exact match is not a subdomain
+            if base_domain == target_domain:
+                return False
+                
+            # Check if target is subdomain of base
+            # e.g. api.example.com ends with .example.com
+            if target_domain.endswith('.' + base_domain):
+                return True
+                
+            return False
+        except Exception:
+            return False
         
     def is_false_positive(self, match: str, pattern_type: str) -> bool:
         """Filter out common false positives"""
@@ -166,7 +209,7 @@ class PatternExtractor:
                 
         return unique_findings
     
-    def extract_api_endpoints(self, content: str) -> List[Dict[str, Any]]:
+    def extract_api_endpoints(self, content: str, base_url: str = None) -> List[Dict[str, Any]]:
         """Extract API endpoints"""
         endpoints = []
         lines = content.split('\n')
@@ -185,6 +228,10 @@ class PatternExtractor:
                 if any(fp in url_path.lower() for fp in ['example.com', 'localhost', 'placeholder']):
                     continue
                 
+                # Filter out subdomains if base_url is provided (Strict Domain Matching)
+                if base_url and self._is_subdomain(url_path, base_url):
+                    continue
+
                 endpoint = {
                     'method': method,
                     'path': url_path[:200],
@@ -288,6 +335,31 @@ class PatternExtractor:
                         # Filter out CSS values in values
                         if param_value and re.match(self.css_values_regex, param_value.strip("'\""), re.IGNORECASE):
                             continue
+                        
+                        short_name_labels = {
+                            'Function Parameters',
+                            'Anonymous Function Parameters',
+                            'Function Expression Parameters',
+                            'Arrow Function Parameters',
+                            'Arrow Function (const)',
+                            'Arrow Function (let)',
+                            'Arrow Function (var)',
+                            'Method Call Parameters',
+                            'Event Handler Parameters',
+                            'EventListener Parameters',
+                            'EventListener Arrow Parameters',
+                            'Promise Callback Parameters',
+                            'Array Method Parameters'
+                        }
+                        if label in short_name_labels:
+                            if param_name and len(param_name) <= 2:
+                                continue
+                            if param_name and param_name.lower() in {'e', 'ev', 'evt', 'x', 'y', 'i', 'j', 'k', '_'}:
+                                continue
+                        
+                        if label in {'URL Query Parameter', 'Query Parameter', 'URL with Query Parameters', 'URL with Multiple Parameters'}:
+                            if not (param_name and param_value):
+                                continue
 
                         # Get exact code snippet
                         line_content = lines[line_num - 1] if line_num <= len(lines) else ""
@@ -389,6 +461,11 @@ class PatternExtractor:
         
         for match in matches:
             src = match.group(1)
+            
+            # Strict Domain Matching: Skip subdomains
+            if base_url and self._is_subdomain(src, base_url):
+                continue
+
             # Normalize URL if needed (handle relative paths)
             # For now, just report the raw path, the user can see it
             scripts.append({

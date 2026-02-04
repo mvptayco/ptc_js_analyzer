@@ -1,5 +1,18 @@
 
 /* ===========================
+   Anti-Inspect Measures (REMOVED)
+=========================== */
+// document.addEventListener('contextmenu', (e) => e.preventDefault());
+// document.addEventListener('keydown', (e) => {
+//   if (e.key === 'F12' || 
+//       (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) || 
+//       (e.ctrlKey && e.key === 'u')) {
+//     e.preventDefault();
+//     return false;
+//   }
+// });
+
+/* ===========================
    CONFIG: Backend endpoints
 =========================== */
 const API = {
@@ -117,10 +130,14 @@ function addProgressItem(container, stage, instant = false) {
   div.classList.add("active");
   container.appendChild(div);
   
-  // Scroll to bottom
-  container.scrollTop = container.scrollHeight;
+  // Scroll to bottom smoothly for the "moving up" effect
+    // container.scrollTop = container.scrollHeight;
+    container.scrollTo({
+      top: container.scrollHeight,
+      behavior: 'smooth'
+    });
 
-  // SYNC: Update the main loading text to match current stage
+    // SYNC: Update the main loading text to match current stage
   // This ensures the spinner text doesn't get stuck on "Analyzing URL..."
   const loadingText = $("loading-text");
   if (loadingText) loadingText.textContent = stage.text;
@@ -224,23 +241,55 @@ function jumpToResults(message = "Analyzing...") {
 /* ===========================
    Modal open/close
 =========================== */
-function openModal(modalId) {
+// EXPOSE GLOBALLY for inline onclicks
+window.openModal = function(modalId) {
   const modal = $(modalId);
   if (!modal) return;
   modal.classList.remove("hidden");
   modal.setAttribute("aria-hidden", "false");
   document.body.classList.add("modal-open");
-}
+};
 
-function closeModal(modalId) {
+window.closeModal = function(modalId) {
   const modal = $(modalId);
   if (!modal) return;
   modal.classList.add("hidden");
   modal.setAttribute("aria-hidden", "true");
   document.body.classList.remove("modal-open");
-}
+};
 
 /* Close modal on overlay/close button click */
+document.addEventListener("DOMContentLoaded", () => {
+  // Bind class-based listeners as backup
+  const closeBtns = document.querySelectorAll(".modal-close, [data-close='true']");
+  closeBtns.forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      e.preventDefault();
+      // Find modal
+      const modal = btn.closest(".modal");
+      if (modal) {
+        modal.classList.add("hidden");
+        modal.setAttribute("aria-hidden", "true");
+        document.body.classList.remove("modal-open");
+      }
+    });
+  });
+});
+
+// Capture phase listener (Nuclear option for stubborn events)
+window.addEventListener("click", (e) => {
+  const closeTarget = e.target.closest("[data-close='true']");
+  if (!closeTarget) return;
+
+  const modal = closeTarget.closest(".modal");
+  if (!modal) return;
+
+  // If we found a modal and a close target, close it!
+  modal.classList.add("hidden");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("modal-open");
+}, true); // Use capture phase!
+
 document.addEventListener("click", (e) => {
   const closeTarget = e.target.closest("[data-close='true']");
   if (!closeTarget) return;
@@ -361,22 +410,7 @@ $("urlFile")?.addEventListener("change", (e) => {
   if (analyzeFileBtn) { analyzeFileBtn.disabled = false; analyzeFileBtn.setAttribute("aria-disabled","false"); }
 });
 
-/* ===========================
-   ✅ Close modal immediately when Analyze clicked
-=========================== */
-function attachPreAnalyzeClose(buttonId, message) {
-  const btn = $(buttonId);
-  if (!btn) return;
 
-  btn.addEventListener("click", () => {
-    clearError();
-    closeModal("analyzerModal");
-    jumpToResults(message);
-  }, true); // capture phase
-}
-attachPreAnalyzeClose("analyzeBtn", "Analyzing URL...");
-attachPreAnalyzeClose("analyzeMultipleBtn", "Analyzing all URLs...");
-attachPreAnalyzeClose("analyzeFileBtn", "Analyzing file...");
 
 /* ===========================
    Rendering: Files + Results + Stats + Filters
@@ -484,6 +518,7 @@ function renderFindingItem(item, mask = false) {
   }
 
   const lineHtml = line ? `<span class="meta-tag"><i class="fas fa-list-ol"></i> Line ${line}</span>` : "";
+  const directoryHtml = item.directory ? `<span class="meta-tag"><i class="fas fa-folder"></i> Directory: ${item.directory}</span>` : "";
   const typeHtml = type ? `<span class="meta-tag"><i class="fas fa-tag"></i> ${type}</span>` : "";
   
   const confidence = item.confidence || "";
@@ -501,11 +536,20 @@ function renderFindingItem(item, mask = false) {
     <div class="finding-content">
       ${contentLabel ? `<div class="finding-content-label">${escapeHtml(contentLabel)}</div>` : ""}
       <div class="finding-content-text">${escapeHtml(content)}</div>
+      ${Array.isArray(item.related_endpoints) && item.related_endpoints.length ? `
+        <div class="finding-related" style="margin-top:8px;">
+          <div class="finding-content-label">Related Endpoints</div>
+          <ul style="margin:6px 0 0; padding-left:18px; color:var(--muted);">
+            ${item.related_endpoints.slice(0,3).map(ep => `<li>${escapeHtml(((ep.method || '') + ' ' + (ep.path || '')).trim())}</li>`).join("")}
+          </ul>
+        </div>
+      ` : ""}
     </div>
     <div class="finding-meta">
       ${confidenceHtml}
       ${typeHtml}
       ${lineHtml}
+      ${directoryHtml}
     </div>
   `;
 }
@@ -618,12 +662,11 @@ function renderServerInfoGroup(file) {
         const details = normalizeList(file.rate_limit_info.details).map(d => `<div><i class="fas fa-info-circle" style="color:var(--accent); font-size:0.8em;"></i> ${escapeHtml(d)}</div>`).join("");
          html += `
         <div class="finding-group">
-            <h3 class="finding-title"><i class="fas fa-tachometer-alt"></i> Rate Limiting</h3>
+            <h3 class="finding-title"><i class="fas fa-hand-paper"></i> Rate Limiting</h3>
             <div class="finding-list">
                 <div class="finding-item">
                     <div class="finding-content">
-                        <div class="finding-content-label">Provider: ${escapeHtml(file.rate_limit_info.provider)}</div>
-                        <div class="finding-content-text" style="color:#F48120; font-weight:bold; margin-bottom:5px;">Rate Limiting Detected</div>
+                        <div class="finding-content-text" style="color:#00ff9d; font-weight:bold; margin-bottom:5px;">Rate Limiting Detected</div>
                         <div style="font-size:0.9em;">${details}</div>
                     </div>
                 </div>
@@ -633,316 +676,366 @@ function renderServerInfoGroup(file) {
 
     // CSP
     if (file.csp_info) {
-        const weaknesses = normalizeList(file.csp_info.weaknesses).map(w => `<div style="color:#ffb1b1; margin-top:3px;"><i class="fas fa-times-circle"></i> ${escapeHtml(w)}</div>`).join("");
+        let cspHtml = "";
+        if (file.csp_info.is_present) {
+             cspHtml = `<div class="finding-content-text" style="color:#00ff9d; font-weight:bold; margin-bottom:5px;">CSP Present</div>`;
+        } else {
+             cspHtml = `<div class="finding-content-text" style="color:#ffb1b1; font-weight:bold; margin-bottom:5px;">CSP Missing</div>`;
+        }
         
-         html += `
+        if (file.csp_info.raw) {
+            cspHtml += `<div style="font-size:0.9em; word-break:break-all; margin-top:5px; padding:5px; background:rgba(0,0,0,0.3); border-radius:4px;">${escapeHtml(file.csp_info.raw)}</div>`;
+        }
+
+        html += `
         <div class="finding-group">
             <h3 class="finding-title"><i class="fas fa-shield-virus"></i> Content Security Policy</h3>
             <div class="finding-list">
                 <div class="finding-item">
                     <div class="finding-content">
-                        ${weaknesses ? `<div style="margin-bottom:10px; font-weight:bold; color:#ffb1b1;">Weaknesses Detected:</div>${weaknesses}` : '<div style="color:var(--accent); font-weight:bold;"><i class="fas fa-check-circle"></i> CSP looks good!</div>'}
-                        <div style="margin-top:10px; font-size:0.85em; opacity:0.7; word-break:break-all; font-family:monospace; background:rgba(0,0,0,0.2); padding:5px; border-radius:4px;">${escapeHtml(file.csp_info.raw)}</div>
+                        ${cspHtml}
                     </div>
                 </div>
             </div>
         </div>`;
     }
 
-    return html || `<div class="helper-note"><i class="fas fa-circle-info"></i> No server information available.</div>`;
+    return html;
 }
 
-function escapeHtml(str) {
-  return String(str)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function applyFilterToFile(file) {
-  const f = CURRENT_FILTER;
-
-  const groups = {
-    api_keys: () => buildFindingGroup("API Keys", "fas fa-key", file.api_keys, { mask: true }),
-    credentials: () => buildFindingGroup("Credentials", "fas fa-lock", file.credentials, { mask: true }),
-    emails: () => buildFindingGroup("Emails", "fas fa-envelope", file.emails, { mask: false }),
-    xss: () => buildFindingGroup("XSS Vulnerabilities", "fas fa-triangle-exclamation", file.xss_vulnerabilities, { mask: false }),
-    xss_functions: () => buildFindingGroup("XSS Functions", "fas fa-bug", file.xss_functions, { mask: false }),
-    api_endpoints: () => buildFindingGroup("API Endpoints", "fas fa-code-branch", file.api_endpoints, { mask: false }),
-    parameters: () => buildFindingGroup("Parameters", "fas fa-sliders", file.parameters, { mask: false }),
-    paths: () => buildFindingGroup("Paths/Directories", "fas fa-folder-open", file.paths_directories, { mask: false }),
-    comments: () => buildFindingGroup("Comments", "fas fa-comment-dots", file.interesting_comments, { mask: false }),
-    errors: () => buildFindingGroup("Errors", "fas fa-circle-xmark", file.errors, { mask: false }),
-    server_info: () => renderServerInfoGroup(file),
-    recommendations: () => buildRecommendationsGroup(file.recommendations)
-  };
-
-  if (f === "all") {
-    return (
-      groups.api_keys() +
-      groups.credentials() +
-      groups.emails() +
-      groups.xss() +
-      groups.xss_functions() +
-      groups.api_endpoints() +
-      groups.server_info() +
-      groups.recommendations() +
-      groups.parameters() +
-      groups.paths() +
-      groups.comments() +
-      groups.errors()
-    ) || `<div class="helper-note"><i class="fas fa-circle-info"></i> No findings for this file.</div>`;
-  }
-
-  // map HTML filters to groups
-  if (groups[f]) {
-    return groups[f]() || `<div class="helper-note"><i class="fas fa-circle-info"></i> No findings for this filter.</div>`;
-  }
-
-  return `<div class="helper-note"><i class="fas fa-circle-info"></i> Unknown filter.</div>`;
-}
 
 function renderSelectedFile() {
-  const findings = $("findings-content");
-  const backBtn = $("backToFiles");
-  if (!findings) return;
+  const container = $("findings-content");
+  const section = $("results");
+  if (!container || !section) return;
 
-  const file = CURRENT_RESULTS.find(r => r.file_id === CURRENT_FILE_ID) || CURRENT_RESULTS[0];
+  const file = CURRENT_RESULTS.find(r => r.file_id === CURRENT_FILE_ID);
   if (!file) {
-    findings.innerHTML = `<div class="helper-note"><i class="fas fa-circle-info"></i> No results yet.</div>`;
+    container.innerHTML = "<p>File result not found.</p>";
     return;
   }
+  
+  // Show back button
+  $("backToFiles")?.classList.remove("hidden");
+  $("files-section")?.classList.add("hidden");
+  
+  // Ensure results section is visible
+  section.classList.remove("hidden");
+  section.setAttribute("aria-busy", "false");
 
-  // show back button when a file is selected
-  if (backBtn) show(backBtn);
+  // Build HTML
+  let html = "";
+  
+  const showAll = CURRENT_FILTER === "all";
 
-  findings.innerHTML = `
-    <div class="file-header" style="margin-bottom:10px; color:var(--muted); font-weight:900;">
-      <i class="fas fa-file-code" aria-hidden="true"></i>
-      <span style="margin-left:8px;">${escapeHtml(file.url || `File ${file.file_id}`)}</span>
-    </div>
-    ${applyFilterToFile(file)}
-  `;
-}
-
-function renderOverviewAllFiles() {
-  const findings = $("findings-content");
-  const backBtn = $("backToFiles");
-  if (!findings) return;
-
-  // hide back button in overview mode
-  if (backBtn) hide(backBtn);
-
-  // Show a condensed overview: totals + per file quick summary
-  const blocks = CURRENT_RESULTS.map(file => {
-    const k = normalizeList(file.api_keys).length;
-    const c = normalizeList(file.credentials).length;
-    const e = normalizeList(file.emails).length;
-    const x = normalizeList(file.xss_vulnerabilities).length;
-    const ep = normalizeList(file.api_endpoints).length;
-
-    return `
-      <div class="stat-card" style="margin-bottom:10px; cursor:pointer;" data-file="${file.file_id}">
-        <i class="fas fa-file-code" aria-hidden="true"></i>
-        <div style="flex:1;">
-          <div style="font-weight:900; margin-bottom:4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-            ${escapeHtml(file.url || `File ${file.file_id}`)}
-          </div>
-          <div style="color:var(--muted); font-weight:850; font-size:.9rem;">
-            Keys: ${k} • Creds: ${c} • Emails: ${e} • XSS: ${x} • Endpoints: ${ep}
+  // Errors (Always show if present, or maybe only on 'all'?)
+  // Usually errors are important enough to show on 'all' or if we had an 'errors' tab.
+  // Let's show them on 'all' for now.
+  if (showAll) {
+    const errs = normalizeList(file.errors);
+    if (errs.length > 0) {
+      html += `
+        <div class="finding-group error-group">
+          <h3 class="finding-title error-title"><i class="fas fa-exclamation-triangle"></i> Errors</h3>
+          <div class="finding-list">
+            ${errs.map(e => `<div class="finding-item error-item">${escapeHtml(e)}</div>`).join("")}
           </div>
         </div>
-      </div>
-    `;
-  }).join("");
+      `;
+    }
+  }
+  
+  // Recommendations
+  if (showAll || CURRENT_FILTER === "recommendations") {
+      html += buildRecommendationsGroup(file.recommendations);
+  }
+  
+  // Server/IP/CSP info
+  if (showAll || CURRENT_FILTER === "server_info") {
+      html += renderServerInfoGroup(file);
+  }
 
-  findings.innerHTML = blocks || `<div class="helper-note"><i class="fas fa-circle-info"></i> No results yet.</div>`;
+  // Security Findings
+  if (showAll || CURRENT_FILTER === "api_keys") 
+      html += buildFindingGroup("API Keys", "fas fa-key", file.api_keys, {mask:false});
+      
+  if (showAll || CURRENT_FILTER === "credentials")
+      html += buildFindingGroup("Credentials", "fas fa-user-lock", file.credentials, {mask:false});
+      
+  if (showAll || CURRENT_FILTER === "emails")
+      html += buildFindingGroup("Emails", "fas fa-envelope", file.emails, {mask:false});
+      
+  if (showAll || CURRENT_FILTER === "xss")
+      html += buildFindingGroup("XSS Vulnerabilities", "fas fa-bug", file.xss_vulnerabilities);
+      
+  if (showAll || CURRENT_FILTER === "xss_functions")
+      html += buildFindingGroup("XSS Sinks/Sources", "fas fa-code", file.xss_functions);
+      
+  if (showAll || CURRENT_FILTER === "api_endpoints")
+      html += buildFindingGroup("API Endpoints", "fas fa-link", file.api_endpoints);
+      
+  if (showAll || CURRENT_FILTER === "parameters")
+      html += buildFindingGroup("Parameters", "fas fa-puzzle-piece", file.parameters);
+      
+  if (showAll || CURRENT_FILTER === "paths")
+      html += buildFindingGroup("Paths & Directories", "fas fa-folder-open", file.paths_directories);
+      
+  if (showAll || CURRENT_FILTER === "comments")
+      html += buildFindingGroup("Interesting Comments", "fas fa-comment-dots", file.interesting_comments);
 
-  // click overview card -> open file view
-  findings.querySelectorAll("[data-file]").forEach(el => {
-    el.addEventListener("click", () => {
-      CURRENT_FILE_ID = Number(el.getAttribute("data-file"));
+  if (!html) {
+    html = "<p style='padding:1rem; color:var(--muted);'>No findings for this category.</p>";
+  }
+
+  container.innerHTML = html;
+  
+  // Scroll to results
+  // Only scroll if we are not already there (to avoid annoying jumps when switching filters)
+  // But maybe we should just scroll to top of results container?
+  // section.scrollIntoView({ behavior: "smooth" }); // user might find this annoying if they just clicked a filter
+
+}
+
+function escapeHtml(text) {
+  if (!text) return "";
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+
+/* ===========================
+   Main Analysis Logic
+=========================== */
+async function performAnalysis(payload, isFile = false) {
+  setLoading(true, "Initializing analysis...");
+  CURRENT_RESULTS = [];
+  CURRENT_FILE_ID = null;
+  $("files-grid").innerHTML = "";
+  $("findings-content").innerHTML = "";
+  $("backToFiles")?.classList.add("hidden");
+  
+  try {
+    let res;
+    if (isFile) {
+      // payload is FormData
+      res = await fetch(API.analyze, {
+        method: "POST",
+        headers: { "Accept": "application/json" },
+        body: payload
+      });
+    } else {
+      // payload is JSON object
+      res = await fetch(API.analyze, {
+        method: "POST",
+        headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+    }
+
+    if (!res.ok) {
+        if (res.status === 429) {
+             // Redirect to rate limit page so user sees the HTML
+             window.location.href = "/rate-limited";
+             throw new Error("Rate limit exceeded. Redirecting...");
+        }
+        const errData = await res.json();
+        throw new Error(errData.error || "Analysis failed");
+    }
+
+    const data = await res.json();
+    setLoading(false);
+    
+    // Close modal now that analysis is done
+    closeModal("analyzerModal");
+
+    // Save global results
+    CURRENT_RESULTS = data.results || [];
+    window.CURRENT_RESULTS = CURRENT_RESULTS; // Expose for chat context
+
+    if (CURRENT_RESULTS.length === 0) {
+        $("files-section").classList.remove("hidden");
+        const noResultsMsg = "<div style='padding:2rem; text-align:center; color:var(--muted);'><i class='fas fa-search' style='font-size:2rem; margin-bottom:1rem; opacity:0.5;'></i><p>No results returned from analysis.</p></div>";
+        $("files-grid").innerHTML = noResultsMsg;
+        
+        // Also show in findings content to be sure
+        $("findings-content").innerHTML = noResultsMsg;
+        $("results").classList.remove("hidden"); // Ensure results section is shown for empty message
+        
+        $("files-section").scrollIntoView({ behavior: "smooth" });
+        return;
+    }
+
+    // Render stats
+    renderStats(CURRENT_RESULTS);
+
+    // Render files grid
+    renderFilesGrid(CURRENT_RESULTS);
+
+    // Auto-select if only 1 file
+    if (CURRENT_RESULTS.length === 1) {
+      CURRENT_FILE_ID = CURRENT_RESULTS[0].file_id;
+      renderSelectedFile();
+    } else {
+       // Show files list
+       $("files-section").classList.remove("hidden");
+       $("files-section").scrollIntoView({ behavior: "smooth" });
+    }
+
+  } catch (err) {
+    setLoading(false);
+    showError(err.message);
+  }
+}
+
+/* ===========================
+   Event Listeners
+=========================== */
+
+/* Ensure DOM is loaded before attaching listeners */
+document.addEventListener('DOMContentLoaded', () => {
+
+  /* Helper to close modal and show results */
+  function prepareAnalysisUI(message) {
+    clearError();
+    // Keep modal open to show loading state inside it
+    setLoading(true, message);
+  }
+
+  /* Filters */
+  const filterBtns = document.querySelectorAll(".filter-btn");
+  filterBtns.forEach(btn => {
+    btn.addEventListener("click", () => {
+      // Update active state
+      filterBtns.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      
+      // Update filter
+      CURRENT_FILTER = btn.dataset.filter || "all";
+      
+      // Re-render
       renderSelectedFile();
     });
   });
-}
 
-/* Back to Files button (go back to overview) */
-$("backToFiles")?.addEventListener("click", () => {
-  CURRENT_FILE_ID = null;
-  renderOverviewAllFiles();
-});
-
-/* Filters */
-$$(".filter-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    $$(".filter-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-    CURRENT_FILTER = btn.dataset.filter || "all";
-
-    // re-render current view
-    if (CURRENT_FILE_ID) renderSelectedFile();
-    else renderOverviewAllFiles();
-  });
-});
-
-/* ===========================
-   Analyze handlers (calls backend)
-=========================== */
-// API Key removed as per user request
-
-async function postJSON(url, bodyObj) {
-  const headers = {
-    "Content-Type": "application/json"
-  };
-  
-  const res = await fetch(url, {
-    method: "POST",
-    headers: headers,
-    body: JSON.stringify(bodyObj)
-  });
-
-  // Handle errors
-  if (!res.ok) {
-    const text = await res.text();
-    // Try to parse JSON error message first
-    try {
-        const json = JSON.parse(text);
-        throw new Error(json.message || json.error || `Request failed: ${res.status}`);
-    } catch (e) {
-        if (e.message && e.message !== "Unexpected end of JSON input") throw e;
-        throw new Error(text || `Request failed: ${res.status}`);
-    }
+  /* Single URL */
+  const analyzeBtn = $("analyzeBtn");
+  if (analyzeBtn) {
+    analyzeBtn.addEventListener("click", () => {
+      const url = $("jsUrl").value.trim();
+      if (!url) { 
+        showError("Please enter a URL"); 
+        return; 
+      }
+      
+      prepareAnalysisUI("Analyzing URL...");
+      performAnalysis({ url: url });
+    });
   }
-  return res.json();
-}
 
-async function postFile(url, file) {
-  const fd = new FormData();
-  fd.append("file", file);
-  
-  const headers = {};
-
-  const res = await fetch(url, {
-    method: "POST",
-    headers: headers,
-    body: fd
-  });
-
-  if (!res.ok) {
-    const text = await res.text();
-    // Try to parse JSON error message first
-    try {
-        const json = JSON.parse(text);
-        throw new Error(json.message || json.error || `Request failed: ${res.status}`);
-    } catch (e) {
-        if (e.message && e.message !== "Unexpected end of JSON input") throw e;
-        throw new Error(text || `Request failed: ${res.status}`);
-    }
+  /* Multiple URLs */
+  const analyzeMultipleBtn = $("analyzeMultipleBtn");
+  if (analyzeMultipleBtn) {
+    analyzeMultipleBtn.addEventListener("click", () => {
+      const raw = $("multipleUrls").value.trim();
+      if (!raw) { showError("Please enter URLs"); return; }
+      
+      const urls = raw.split(/[\r\n,]+/).map(u => u.trim()).filter(Boolean);
+      if (!urls.length) { showError("No valid URLs found"); return; }
+      
+      prepareAnalysisUI("Analyzing all URLs...");
+      performAnalysis({ urls: urls });
+    });
   }
-  return res.json();
-}
 
-/* Single URL */
-$("analyzeBtn")?.addEventListener("click", async () => {
-  clearError();
+  /* File Upload */
+  const analyzeFileBtn = $("analyzeFileBtn");
+  if (analyzeFileBtn) {
+    analyzeFileBtn.addEventListener("click", () => {
+      const fileInput = $("urlFile");
+      const file = fileInput.files?.[0];
+      if (!file) { showError("Please select a file"); return; }
 
-  const jsUrl = $("jsUrl")?.value?.trim();
-  if (!jsUrl) return showError("Please enter a JavaScript URL.");
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      prepareAnalysisUI("Analyzing file...");
+      performAnalysis(formData, true);
+    });
+  }
 
-  try {
-    setLoading(true, "Analyzing URL...");
-    const data = await postJSON(API.analyze, { url: jsUrl });
+  /* Back to files button */
+  const backToFiles = $("backToFiles");
+  if (backToFiles) {
+    backToFiles.addEventListener("click", () => {
+      $("files-section").classList.remove("hidden");
+      $("findings-content").innerHTML = ""; // clear details
+      $("backToFiles").classList.add("hidden");
+      $("files-section").scrollIntoView({ behavior: "smooth" });
+    });
+  }
 
-    CURRENT_RESULTS = Array.isArray(data.results) ? data.results : [];
-    CURRENT_FILE_ID = null;
-    window.CURRENT_SESSION_ID = data.session_id;
-
-    renderFilesGrid(CURRENT_RESULTS);
-    renderStats(CURRENT_RESULTS);
-    renderOverviewAllFiles();
-
-    setLoading(false);
-    $("results")?.setAttribute("aria-busy", "false");
-  } catch (err) {
-    setLoading(false);
-    $("results")?.setAttribute("aria-busy", "false");
-    showError(err.message || "Analysis failed.");
+  /* Prevent form submission and trigger analyze */
+  const singleUrlForm = $("singleUrlForm");
+  if (singleUrlForm) {
+    singleUrlForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      $("analyzeBtn")?.click();
+    });
   }
 });
-
-/* Multiple URLs */
-$("analyzeMultipleBtn")?.addEventListener("click", async () => {
-  clearError();
-
-  const raw = $("multipleUrls")?.value || "";
-  const urls = raw.split("\n").map(x => x.trim()).filter(Boolean);
-  if (!urls.length) return showError("Please enter at least one URL.");
-
-  try {
-    setLoading(true, "Analyzing all URLs...");
-    const data = await postJSON(API.analyze, { urls });
-
-    CURRENT_RESULTS = Array.isArray(data.results) ? data.results : [];
-    CURRENT_FILE_ID = null;
-    window.CURRENT_SESSION_ID = data.session_id;
-
-    renderFilesGrid(CURRENT_RESULTS);
-    renderStats(CURRENT_RESULTS);
-    renderOverviewAllFiles();
-
-    setLoading(false);
-    $("results")?.setAttribute("aria-busy", "false");
-  } catch (err) {
-    setLoading(false);
-    $("results")?.setAttribute("aria-busy", "false");
-    showError(err.message || "Analysis failed.");
-  }
-});
-
-/* File upload */
-$("analyzeFileBtn")?.addEventListener("click", async () => {
-  clearError();
-
-  const file = $("urlFile")?.files?.[0];
-  if (!file) return showError("Please choose a file first.");
-
-  try {
-    setLoading(true, "Analyzing file...");
-    const data = await postFile(API.analyze, file);
-
-    CURRENT_RESULTS = Array.isArray(data.results) ? data.results : [];
-    CURRENT_FILE_ID = null;
-    window.CURRENT_SESSION_ID = data.session_id;
-
-    renderFilesGrid(CURRENT_RESULTS);
-    renderStats(CURRENT_RESULTS);
-    renderOverviewAllFiles();
-
-    setLoading(false);
-    $("results")?.setAttribute("aria-busy", "false");
-  } catch (err) {
-    setLoading(false);
-    $("results")?.setAttribute("aria-busy", "false");
-    showError(err.message || "Analysis failed.");
-  }
-});
-
-
-/* function formatFinding removed */
 
 /* ============ CHAT WIDGET ============ */
 document.addEventListener('DOMContentLoaded', () => {
+  // Store system instruction
+  let systemInstruction = "";
+
+  // Fetch system instruction on load
+  fetch('/api/chat/config')
+      .then(res => res.json())
+      .then(data => {
+          systemInstruction = data.system_instruction || "";
+      })
+      .catch(err => console.error("Failed to load chat config", err));
+
   const chatToggleBtn = $('chatToggleBtn');
   const chatWindow = $('chatWindow');
   const chatCloseBtn = $('chatCloseBtn');
   const chatMessages = $('chatMessages');
   const chatInput = $('chatInput');
   const chatSendBtn = $('chatSendBtn');
+  const chatInputArea = document.querySelector('.chat-input-area');
 
   if (!chatToggleBtn || !chatWindow) return;
+
+  // Add Model Selector
+  const modelSelect = document.createElement('select');
+  modelSelect.id = 'chatModelSelect';
+  modelSelect.className = 'chat-model-select';
+  modelSelect.innerHTML = `
+      <option value="gpt-4o">GPT-4o (Best)</option>
+      <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
+      <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+      <option value="gpt-4o-mini">GPT-4o Mini (Fast)</option>
+  `;
+  // Style the selector - Moved to style.css
+  // Object.assign(modelSelect.style, ... );
+  
+  // Insert before input area (not inside it, to avoid breaking flex row)
+  if (chatInputArea && chatInputArea.parentNode) {
+      // Create a wrapper for padding/spacing if needed
+      const wrapper = document.createElement('div');
+      wrapper.style.padding = "0 12px";
+      wrapper.style.background = "rgba(255,255,255,0.02)";
+      wrapper.appendChild(modelSelect);
+      chatInputArea.parentNode.insertBefore(wrapper, chatInputArea);
+  }
 
   // Toggle chat window
   chatToggleBtn.addEventListener('click', () => {
@@ -968,46 +1061,81 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Show typing indicator
     const typingId = addMessage("Thinking...", 'bot typing');
+    
+    // Get selected model
+    const selectedModel = modelSelect.value || 'gpt-4o-mini';
 
     try {
-      // Find session ID from global results or DOM
-      // Assuming session ID is not explicitly stored in global var, 
-      // but we can try to infer or send empty. 
-      // For best results, app.py uses session to context.
-      // We will look for a session ID if available, else standard chat.
-      // Note: In this simple implementation, the backend updates context 
-      // based on whatever session_id is passed. 
-      // We'll grab the first session ID from the results if available.
-      
-      // Attempt to get session ID from URL or hidden field if stored.
-      // Since we don't store it globally in script.js, let's look at CURRENT_RESULTS?
-      // CURRENT_RESULTS is an array of files. We need the session key.
-      // We'll rely on the backend's in-memory storage. 
-      // Since we don't have the session ID handy in a variable, we'll try to get it.
-      // Actually, app.py returns session_id in the /analyze response.
-      // We should store it.
-      
-      // Fallback: If we can't find session ID, the chat engine will just use generic knowledge.
-      const sessionId = window.CURRENT_SESSION_ID || null;
+      // Build context from analysis results
+      let context = "";
+      if (window.CURRENT_RESULTS && window.CURRENT_RESULTS.length > 0) {
+          context = "\n\n[System Context - Current Analysis Findings]:\n";
+          window.CURRENT_RESULTS.forEach(file => {
+               context += `File: ${file.url || 'Uploaded File'}\n`;
+               
+               const findings = [];
+               if (file.api_keys && file.api_keys.length) {
+                   findings.push(`- API Keys (${file.api_keys.length}): ${file.api_keys.map(k => k.value || k.match).join(', ').substring(0, 100)}...`);
+               }
+               if (file.credentials && file.credentials.length) {
+                   findings.push(`- Credentials (${file.credentials.length}): ${file.credentials.map(c => c.value || c.match).join(', ').substring(0, 100)}...`);
+               }
+               if (file.xss_vulnerabilities && file.xss_vulnerabilities.length) {
+                   findings.push(`- XSS Vulnerabilities (${file.xss_vulnerabilities.length}) found.`);
+               }
+               if (file.recommendations && file.recommendations.length) {
+                   findings.push(`- Recommendations: ${file.recommendations.map(r => r.title).join('; ')}`);
+               }
+               
+               if(findings.length > 0) {
+                   context += findings.join("\n") + "\n";
+               } else {
+                   context += "No significant security issues found.\n";
+               }
+          });
+          context += "\nPlease use these findings to answer the user's questions comprehensively.";
+      }
 
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, session_id: sessionId })
-      });
-      
-      const data = await response.json();
-      
-      // Remove typing indicator
+      // Prepare messages for Puter.js
+      const messages = [
+          { role: 'system', content: systemInstruction },
+          { role: 'user', content: context ? (text + context) : text }
+      ];
+
+      // Remove typing indicator before streaming starts
       const typingEl = document.querySelector('.message.typing');
       if (typingEl) typingEl.remove();
-      
-      addMessage(data.response || "I couldn't process that.", 'bot');
+
+      // Create bot message container
+      const botMsgDiv = addMessage("", 'bot');
+      const contentDiv = botMsgDiv.querySelector('.message-content');
+      let fullResponse = "";
+
+      // Use Puter.js with streaming
+      const response = await puter.ai.chat(messages, { 
+          model: selectedModel,
+          stream: true 
+      });
+
+      for await (const part of response) {
+          if (part?.text) {
+              fullResponse += part.text;
+              contentDiv.innerHTML = fullResponse.replace(/\n/g, '<br>');
+              chatMessages.scrollTop = chatMessages.scrollHeight;
+          }
+      }
       
     } catch (err) {
+      console.error(err);
       const typingEl = document.querySelector('.message.typing');
       if (typingEl) typingEl.remove();
-      addMessage("Sorry, I encountered an error connecting to the server.", 'bot');
+      
+      // If we already have a partial response, don't show error, just log it. 
+      // Otherwise show error.
+      const lastMsg = chatMessages.lastElementChild;
+      if (!lastMsg || !lastMsg.classList.contains('bot') || lastMsg.textContent.trim() === "") {
+          addMessage("Sorry, I encountered an error connecting to the AI service (Puter.js).", 'bot');
+      }
     }
   };
 

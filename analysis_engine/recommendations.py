@@ -27,6 +27,7 @@ def generate_recommendations(result: AnalysisResult) -> List[Dict[str, Any]]:
         google_keys = [k for k in result.api_keys if 'Google' in k.get('type', '')]
         stripe_keys = [k for k in result.api_keys if 'Stripe' in k.get('type', '')]
         github_keys = [k for k in result.api_keys if 'GitHub' in k.get('type', '')]
+        linked = [k for k in result.api_keys if k.get('related_endpoints')]
         
         if aws_keys:
             add_rec('Critical', 'Secrets Management', 'AWS Credentials Exposed', 
@@ -51,6 +52,23 @@ def generate_recommendations(result: AnalysisResult) -> List[Dict[str, Any]]:
                    f"Found {len(github_keys)} GitHub tokens. Revoke these immediately. "
                    "Exposed tokens can allow attackers to access private repositories "
                    "or modify code.")
+        
+        if linked:
+            example = []
+            for k in linked:
+                eps = k.get('related_endpoints') or []
+                for ep in eps:
+                    p = ep.get('path')
+                    m = ep.get('method')
+                    if p:
+                        example.append(f"{m or ''} {p}".strip())
+                    if len(example) >= 3:
+                        break
+                if len(example) >= 3:
+                    break
+            add_rec('High', 'Secrets Management', 'Keys Near API Calls',
+                   "Detected API keys near HTTP requests/endpoints: " + (", ".join(example) if example else "multiple endpoints") +
+                   ". Verify that sensitive keys are not used client-side and enforce allowlists (referrer/IP) where applicable.")
             
         # Generic catch-all if specific ones weren't the only ones
         if len(result.api_keys) > (len(aws_keys) + len(google_keys) + len(stripe_keys) + len(github_keys)):

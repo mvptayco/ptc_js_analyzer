@@ -37,10 +37,18 @@ def analyze_csp(headers: Optional[Dict[str, str]]) -> Optional[Dict[str, Any]]:
         return None
         
     csp_header = headers.get('Content-Security-Policy', headers.get('content-security-policy', ''))
+    
     if not csp_header:
-        return None
+        # Return object indicating missing CSP so UI can show "CSP Missing"
+        return {
+            'is_present': False,
+            'raw': None,
+            'directives': {},
+            'weaknesses': ["CSP Header is missing"]
+        }
         
     csp_info = {
+        'is_present': True,
         'raw': csp_header,
         'directives': {},
         'weaknesses': []

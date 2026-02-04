@@ -8,10 +8,14 @@
 
   <meta name="theme-color" content="#FF6500" />
   <meta name="color-scheme" content="dark light" />
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}" />
 
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <script src="https://js.puter.com/v2/"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=10.0" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
@@ -139,7 +143,7 @@
       <div id="chatWindow" class="chat-window hidden">
         <div class="chat-header">
           <div class="chat-title">
-            <i class="fas fa-robot"></i> Security Assistant
+            <i class="fas fa-robot"></i> JS Security Assistant
           </div>
           <button id="chatCloseBtn" class="icon-btn" aria-label="Close chat">
             <i class="fas fa-times"></i>
@@ -181,8 +185,8 @@
             <button id="clearInputsBtn" class="btn-secondary" type="button" aria-label="Clear inputs">
               <i class="fas fa-eraser" aria-hidden="true"></i> Clear
             </button>
-
-            <button class="modal-close" type="button" aria-label="Close modal" data-close="true">
+            <!-- Close button moved to absolute position via CSS, but kept in DOM -->
+            <button class="modal-close" type="button" aria-label="Close modal" onclick="window.closeModal('analyzerModal')">
               <i class="fas fa-times" aria-hidden="true"></i>
             </button>
           </div>
@@ -213,7 +217,7 @@
 
             <!-- Single URL -->
             <div id="single-tab" class="tab-content active" role="tabpanel" aria-labelledby="tab-single" tabindex="0">
-              <form class="input-group" onsubmit="return false" aria-label="Single URL form">
+              <form id="singleUrlForm" class="input-group" aria-label="Single URL form">
                 <label for="jsUrl" class="sr-only">JavaScript file URL</label>
                 <input type="url" id="jsUrl" name="jsUrl"
                        placeholder="Enter JavaScript file URL (e.g., https://example.com/app.js)"
@@ -259,10 +263,8 @@
             </div>
 
             <div id="loading" class="loading hidden" aria-live="polite" aria-atomic="true">
-              <div class="loading-spinner">
-                <i class="fas fa-spinner fa-spin" aria-hidden="true"></i>
-                <span id="loading-text">Analyzing...</span>
-              </div>
+              <div class="loading-spinner"></div>
+              <span id="loading-text">Analyzing...</span>
               <div id="progress-log" class="progress-log hidden"></div>
             </div>
           </section>
@@ -283,7 +285,7 @@
             <i class="fas fa-envelope" aria-hidden="true"></i> Contact Email
           </h3>
 
-          <button class="modal-close" type="button" aria-label="Close modal" data-close="true">
+          <button class="modal-close" type="button" aria-label="Close modal" onclick="window.closeModal('emailModal')">
             <i class="fas fa-times" aria-hidden="true"></i>
           </button>
         </div>
@@ -323,6 +325,6 @@
     </div>
   </noscript>
 
-  <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+  <script src="{{ url_for('static', filename='js/script.js') }}?v=9.4" defer></script>
 </body>
 </html>

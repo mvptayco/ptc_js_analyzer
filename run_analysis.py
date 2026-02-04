@@ -29,12 +29,12 @@ def run_analysis():
             params.append(str(p))
 
     output = {
-        "api_keys": [k['match'] for k in result.api_keys],
-        "credentials": [c['match'] for c in result.credentials],
-        "xss_vulnerabilities": [x['type'] for x in result.xss_vulnerabilities],
-        "emails": [e['match'] for e in result.emails],
-        "api_endpoints": [e['path'] for e in result.api_endpoints],
-        "parameters": params,
+        "api_keys": result.api_keys,
+        "credentials": result.credentials,
+        "xss_vulnerabilities": result.xss_vulnerabilities,
+        "emails": result.emails,
+        "api_endpoints": result.api_endpoints,
+        "parameters": result.parameters,
         "recommendations": result.recommendations
     }
     

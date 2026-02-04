@@ -16,7 +16,7 @@ from typing import Dict, List, Any, Optional
 from urllib.parse import urlparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from flask import Flask, render_template, request, jsonify, send_from_directory
+from flask import Flask, render_template, request, jsonify, send_from_directory, g, abort
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
@@ -30,8 +30,8 @@ from auth import get_api_key
 # ===========================
 app = Flask(__name__)
 
-# Initialize Rate Limiter (e.g., 100 requests per minute)
-limiter = RateLimiter(limit=100, window=60)
+# Initialize Rate Limiter (e.g., 10 requests per 10 seconds)
+limiter = RateLimiter(limit=10, window=10)
 
 # CORS: okay for dev; for production restrict origins.
 CORS(app)
@@ -46,6 +46,37 @@ chat_engine = MLChatEngine()
 # Store analysis results in memory (prod: use Redis/DB)
 analysis_results: Dict[str, Dict[str, Any]] = {}
 
+def _get_client_ip() -> str:
+    """Resolve client IP reliably (proxy-aware) and normalize local dev cases."""
+    try:
+        forwarded = (request.headers.get("X-Forwarded-For") or "").split(",")[0].strip()
+        ip = forwarded or (request.remote_addr or "")
+        # Normalize dev addresses that are non-routable
+        if ip in ("", "0.0.0.0", "::", "::1"):
+            ip = "127.0.0.1"
+        return ip
+    except Exception:
+        return "127.0.0.1"
+
+def _normalize_localhost(url: str) -> str:
+    """
+    Replace 0.0.0.0 with 127.0.0.1 for local analysis to avoid fetch failures.
+    Preserve port and userinfo if present.
+    """
+    try:
+        p = urlparse(url.strip())
+        if p.scheme in ("http", "https") and p.netloc and p.netloc.startswith("0.0.0.0"):
+            netloc = p.netloc.replace("0.0.0.0", "127.0.0.1")
+            return p._replace(netloc=netloc).geturl()
+        return url
+    except Exception:
+        return url
+
+
+@app.route("/rate-limited")
+def rate_limited():
+    """Explicit route for rate limit page"""
+    return render_template("429.html"), 429
 
 @app.before_request
 def check_rate_limit():
@@ -58,10 +89,49 @@ def check_rate_limit():
         return
         
     # Get client identifier (IP address)
-    client_id = request.remote_addr
+    client_id = _get_client_ip()
+    g.client_id = client_id
     
     if not limiter.is_allowed(client_id):
-        return error_response("Rate limit exceeded. Please try again later.", 429)
+        # API requests get JSON, Browser requests get HTML
+        if request.path.startswith("/api/") or request.accept_mimetypes.accept_json:
+             return error_response("Rate limit exceeded. Please try again later.", 429)
+        return render_template("429.html"), 429
+
+
+@app.after_request
+def add_security_headers(response):
+    """Add Content Security Policy and other security headers"""
+    csp = (
+        "default-src 'self'; "
+        "script-src 'self' https://js.puter.com; "
+        "connect-src 'self' https://*.puter.com wss://*.puter.com; "
+        "style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; "
+        "font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; "
+        "img-src 'self' data:; "
+        "object-src 'none'; "
+        "base-uri 'self'; "
+        "form-action 'self'; "
+        "frame-ancestors 'none';"
+    )
+    response.headers['Content-Security-Policy'] = csp
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    
+    # Hide server info
+    response.headers['Server'] = 'SecurityAnalyzer'
+    if 'X-Powered-By' in response.headers:
+        del response.headers['X-Powered-By']
+
+    # Add Rate Limit Headers
+    if hasattr(g, 'client_id'):
+        limit = limiter.limit
+        remaining = limiter.get_remaining(g.client_id)
+        response.headers['X-RateLimit-Limit'] = str(limit)
+        response.headers['X-RateLimit-Remaining'] = str(remaining)
+        
+    return response
 
 # ===========================
 # Utility helpers
@@ -76,7 +146,12 @@ def is_valid_http_url(url: str) -> bool:
     """Basic URL validation to avoid invalid schemes."""
     try:
         p = urlparse(url.strip())
-        return p.scheme in ("http", "https") and bool(p.netloc)
+        if not (p.scheme in ("http", "https") and bool(p.netloc)):
+            return False
+        # Disallow non-routable host explicitly; UI suggests localhost/127.0.0.1
+        if p.netloc.startswith("0.0.0.0"):
+            return False
+        return True
     except Exception:
         return False
 
@@ -110,7 +185,7 @@ def normalize_urls(payload: dict) -> List[str]:
             urls = [url]
 
     # Clean
-    urls = [u.strip() for u in urls if isinstance(u, str) and u.strip()]
+    urls = [_normalize_localhost(u.strip()) for u in urls if isinstance(u, str) and u.strip()]
     return urls
 
 
@@ -128,6 +203,8 @@ def analyze_urls(urls: List[str]) -> Dict[str, Any]:
     def process_url(idx_url_tuple):
         idx, url = idx_url_tuple
         try:
+            # Normalize dev host if needed
+            url = _normalize_localhost(url)
             if not is_valid_http_url(url):
                 raise ValueError("Invalid URL. Only http(s) URLs are allowed.")
 
@@ -226,6 +303,7 @@ def index():
 def api_analyze():
     try:
         urls: List[str] = []
+        is_code_file = False  # Initialize flag
 
         # JSON payload mode
         if request.is_json:
@@ -350,23 +428,12 @@ def get_file_result(session_id: str, file_id: int):
     return jsonify(file_result), 200
 
 
-@app.route("/api/chat", methods=["POST"])
-def chat():
-    """Chat with the security assistant (ML-powered)"""
-    data = request.json or {}
-    message = data.get("message", "")
-    session_id = data.get("session_id")
-    
-    if not message:
-        return error_response("Message required", 400)
-        
-    # Update context if session exists
-    if session_id and session_id in analysis_results:
-        results = analysis_results[session_id].get("files", [])
-        chat_engine.update_context(results)
-    
-    response = chat_engine.get_response(message)
-    return jsonify({"response": response})
+@app.route("/api/chat/config", methods=["GET"])
+def chat_config():
+    """Get chat configuration (system instruction/knowledge base)"""
+    return jsonify({
+        "system_instruction": chat_engine.get_system_instruction()
+    })
 
 
 
@@ -380,64 +447,39 @@ def health():
 
 # -----------------------------------------
 # Serve JS files from project root (testing)
-# IMPORTANT: must be LAST to avoid route conflicts
-# Example: http://192.168.1.15:5000/test.js
+# REMOVED for security: User reported exposure of internal structure.
 # -----------------------------------------
-@app.route("/<path:filename>")
-def serve_file(filename: str):
-    # Skip if it's an API route or static/templates
-    if filename.startswith("api/") or filename.startswith("static/") or filename.startswith("templates/"):
-        return error_response("Not found", 404)
+# @app.route("/<path:filename>")
+# def serve_file(filename: str):
+#     return error_response("File access restricted", 403)
 
-    # Only serve .js files
-    if filename.endswith(".js"):
-        # SECURITY: Block access to raw JS files unless authorized
-        # or "encrypt" (obfuscate) the content for viewers
+
+# -----------------------------------------
+# Protected Static Files (JS)
+# -----------------------------------------
+@app.route("/js/<path:filename>")
+def protected_js(filename):
+    """Serve JS files (Referer check disabled for debugging)"""
+    # referer = request.headers.get("Referer")
+    # if not referer:
+    #     # Block requests with no referer (direct access)
+    #     return error_response("Access denied", 403)
+    
+    # # Check if referer is from our own domain
+    # parsed_ref = urlparse(referer)
+    # if parsed_ref.netloc != request.host:
+    #     return error_response("Access denied", 403)
         
-        # Check if authorized to view raw source
-        is_authorized = (
-            request.args.get("api_key") == get_api_key() or 
-            request.headers.get("X-API-Key") == get_api_key()
-        )
+    return send_from_directory(os.path.join(BASE_DIR, "protected_static", "js"), filename)
 
-        try:
-            # Check if file exists
-            file_path = os.path.join(BASE_DIR, filename)
-            if not os.path.exists(file_path):
-                return error_response(f"File {filename} not found", 404)
-                
-            # If authorized, serve raw file
-            if is_authorized:
-                return send_from_directory(BASE_DIR, filename, mimetype="application/javascript")
-                
-            # "Encrypt" / Obfuscate for public view
-            # This hides the source code from casual viewing
-            with open(file_path, 'r', encoding='utf-8') as f:
-                content = f.read()
-                
-            # Simple base64 obfuscation wrapper
-            import base64
-            encoded = base64.b64encode(content.encode('utf-8')).decode('utf-8')
-            
-            obfuscated_js = f"""
-/**
- * Protected Source Code
- * This content is encoded to prevent unauthorized viewing.
- */
-(function() {{
-    var _c = "{encoded}";
-    var _d = atob(_c);
-    // Execute or just show it's protected
-    console.log("Protected script loaded.");
-    // eval(_d); // Uncomment to execute (DANGEROUS if not trusted)
-}})();
-"""
-            return obfuscated_js, 200, {'Content-Type': 'application/javascript'}
 
-        except Exception as e:
-            return error_response(f"Error serving file: {str(e)}", 500)
+@app.errorhandler(404)
+def not_found_error(error):
+    return error_response("Resource not found", 404)
 
-    return error_response("File not found", 404)
+@app.errorhandler(500)
+def internal_error(error):
+    return error_response("Internal server error", 500)
 
 
 # ===========================

@@ -1,156 +1,1391 @@
 {
   "api_keys": [
-    "AKIAIOSFODNN7EXAMPLE",
-    "awsSecret = \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\"",
-    "AIzaSyDummyGoogleAPIKey1234567890123456",
-    "ghp_1234567890abcdefghijklmnopqrstuvwxyz",
-    "sk_live_51Habc123def456ghi789jkl012mno345pqr",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
-    "Secret = \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\""
+    {
+      "type": "AWS Access Key ID",
+      "match": "AKIAIOSFODNN7EXAMPLE",
+      "line": 7,
+      "line_content": "const awsAccessKey = \"AKIAIOSFODNN7EXAMPLE\";",
+      "context": "// TODO: Fix security issues in this file \n// SECURITY: This file contains hardcoded credentials - remove before production \n \n// Hardcoded API Keys \nconst apiKey = \"AIzaSyDummyGoogleAPIKey1234567890123456789\"; \nconst awsAccessKey = \"AKIAIOSFODNN7EXAMPLE\"; \nconst awsSecret = \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\"; \nconst stripeKey = \"sk_live_51Habc123def456ghi789jkl012mno345pqr\"; \nconst githubToken = \"ghp_1234567890abcdefghijklmnopqrstuvwxyz12\"; \n \n// Hardcoded Credentials ",
+      "context_start_line": 2,
+      "context_end_line": 12,
+      "confidence": "High",
+      "directory": "/assets/js",
+      "related_endpoints": [
+        {
+          "method": "API URL Variable",
+          "path": " `https://api.secureapp.com/endpoint` ",
+          "line": 20
+        }
+      ]
+    },
+    {
+      "type": "AWS Secret Key",
+      "match": "awsSecret = \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\"",
+      "line": 8,
+      "line_content": "const awsSecret = \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\";",
+      "context": "// SECURITY: This file contains hardcoded credentials - remove before production \n \n// Hardcoded API Keys \nconst apiKey = \"AIzaSyDummyGoogleAPIKey1234567890123456789\"; \nconst awsAccessKey = \"AKIAIOSFODNN7EXAMPLE\"; \nconst awsSecret = \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\"; \nconst stripeKey = \"sk_live_51Habc123def456ghi789jkl012mno345pqr\"; \nconst githubToken = \"ghp_1234567890abcdefghijklmnopqrstuvwxyz12\"; \n \n// Hardcoded Credentials \nconst username = \"admin\"; ",
+      "context_start_line": 3,
+      "context_end_line": 13,
+      "confidence": "High",
+      "directory": "/assets/js",
+      "related_endpoints": [
+        {
+          "method": "API URL Variable",
+          "path": " `https://api.secureapp.com/endpoint` ",
+          "line": 20
+        }
+      ]
+    },
+    {
+      "type": "Google API Key",
+      "match": "AIzaSyDummyGoogleAPIKey1234567890123456",
+      "line": 6,
+      "line_content": "const apiKey = \"AIzaSyDummyGoogleAPIKey1234567890123456789\";",
+      "context": "\n// TODO: Fix security issues in this file \n// SECURITY: This file contains hardcoded credentials - remove before production \n \n// Hardcoded API Keys \nconst apiKey = \"AIzaSyDummyGoogleAPIKey1234567890123456789\"; \nconst awsAccessKey = \"AKIAIOSFODNN7EXAMPLE\"; \nconst awsSecret = \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\"; \nconst stripeKey = \"sk_live_51Habc123def456ghi789jkl012mno345pqr\"; \nconst githubToken = \"ghp_1234567890abcdefghijklmnopqrstuvwxyz12\"; \n ",
+      "context_start_line": 1,
+      "context_end_line": 11,
+      "confidence": "High",
+      "directory": "/assets/js",
+      "related_endpoints": [
+        {
+          "method": "API URL Variable",
+          "path": " `https://api.secureapp.com/endpoint` ",
+          "line": 20
+        }
+      ]
+    },
+    {
+      "type": "GitHub Personal Access Token",
+      "match": "ghp_1234567890abcdefghijklmnopqrstuvwxyz",
+      "line": 10,
+      "line_content": "const githubToken = \"ghp_1234567890abcdefghijklmnopqrstuvwxyz12\";",
+      "context": "// Hardcoded API Keys \nconst apiKey = \"AIzaSyDummyGoogleAPIKey1234567890123456789\"; \nconst awsAccessKey = \"AKIAIOSFODNN7EXAMPLE\"; \nconst awsSecret = \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\"; \nconst stripeKey = \"sk_live_51Habc123def456ghi789jkl012mno345pqr\"; \nconst githubToken = \"ghp_1234567890abcdefghijklmnopqrstuvwxyz12\"; \n \n// Hardcoded Credentials \nconst username = \"admin\"; \nconst password = \"SuperSecretPassword123!\"; \nconst dbPassword = \"database_password_2024\"; ",
+      "context_start_line": 5,
+      "context_end_line": 15,
+      "confidence": "High",
+      "directory": "/assets/js",
+      "related_endpoints": [
+        {
+          "method": "API URL Variable",
+          "path": " `https://api.secureapp.com/endpoint` ",
+          "line": 20
+        }
+      ]
+    },
+    {
+      "type": "Stripe Live Secret Key",
+      "match": "sk_live_51Habc123def456ghi789jkl012mno345pqr",
+      "line": 9,
+      "line_content": "const stripeKey = \"sk_live_51Habc123def456ghi789jkl012mno345pqr\";",
+      "context": " \n// Hardcoded API Keys \nconst apiKey = \"AIzaSyDummyGoogleAPIKey1234567890123456789\"; \nconst awsAccessKey = \"AKIAIOSFODNN7EXAMPLE\"; \nconst awsSecret = \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\"; \nconst stripeKey = \"sk_live_51Habc123def456ghi789jkl012mno345pqr\"; \nconst githubToken = \"ghp_1234567890abcdefghijklmnopqrstuvwxyz12\"; \n \n// Hardcoded Credentials \nconst username = \"admin\"; \nconst password = \"SuperSecretPassword123!\"; ",
+      "context_start_line": 4,
+      "context_end_line": 14,
+      "confidence": "High",
+      "directory": "/assets/js",
+      "related_endpoints": [
+        {
+          "method": "API URL Variable",
+          "path": " `https://api.secureapp.com/endpoint` ",
+          "line": 20
+        }
+      ]
+    },
+    {
+      "type": "JWT Token",
+      "match": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+      "line": 166,
+      "line_content": "const jwtToken = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\";",
+      "context": "const supportEmail = \"support@company.com\"; \nconst adminEmail = \"admin@secureapp.io\"; \nconst contactEmail = \"contact@example.org\"; \n \n// JWT Token (example) \nconst jwtToken = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\"; \n \n// Event handlers (potential XSS) \ndocument.getElementById(\"button\").onclick = function() { \n    document.getElementById(\"output\").innerHTML = userInput; \n}; ",
+      "context_start_line": 161,
+      "context_end_line": 171,
+      "confidence": "Medium",
+      "directory": "/assets/js",
+      "related_endpoints": [
+        {
+          "method": "fetch()",
+          "path": "/api/old-endpoint",
+          "line": 148
+        },
+        {
+          "method": "API Versioned Path",
+          "path": "/v1/auth",
+          "line": 181
+        },
+        {
+          "method": "API Versioned Path",
+          "path": "/v2/data",
+          "line": 182
+        },
+        {
+          "method": "API Versioned Path",
+          "path": "/v1/upload",
+          "line": 183
+        },
+        {
+          "method": "Base URL",
+          "path": " `https://api.production.com` ",
+          "line": 179
+        }
+      ]
+    },
+    {
+      "type": "Secret Key",
+      "match": "Secret = \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\"",
+      "line": 8,
+      "line_content": "const awsSecret = \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\";",
+      "context": "// SECURITY: This file contains hardcoded credentials - remove before production \n \n// Hardcoded API Keys \nconst apiKey = \"AIzaSyDummyGoogleAPIKey1234567890123456789\"; \nconst awsAccessKey = \"AKIAIOSFODNN7EXAMPLE\"; \nconst awsSecret = \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\"; \nconst stripeKey = \"sk_live_51Habc123def456ghi789jkl012mno345pqr\"; \nconst githubToken = \"ghp_1234567890abcdefghijklmnopqrstuvwxyz12\"; \n \n// Hardcoded Credentials \nconst username = \"admin\"; ",
+      "context_start_line": 3,
+      "context_end_line": 13,
+      "confidence": "Medium",
+      "directory": "/assets/js",
+      "related_endpoints": [
+        {
+          "method": "API URL Variable",
+          "path": " `https://api.secureapp.com/endpoint` ",
+          "line": 20
+        }
+      ]
+    }
   ],
   "credentials": [
-    "password = \"SuperSecretPassword123!\"",
-    "Password = \"database_password_2024\"",
-    "dbPassword = \"database_password_2024\"",
-    "username = \"admin\"",
-    "login: \"/api/v1/auth/login\""
+    {
+      "type": "Password",
+      "match": "password = \"SuperSecretPassword123!\"",
+      "line": 14,
+      "line_content": "const password = \"SuperSecretPassword123!\";",
+      "context": "const stripeKey = \"sk_live_51Habc123def456ghi789jkl012mno345pqr\"; \nconst githubToken = \"ghp_1234567890abcdefghijklmnopqrstuvwxyz12\"; \n \n// Hardcoded Credentials \nconst username = \"admin\"; \nconst password = \"SuperSecretPassword123!\"; \nconst dbPassword = \"database_password_2024\"; \nconst email = \"admin@example.com\"; \n \n// API Configuration \nconst baseURL = \" `https://api.example.com/v1` \"; ",
+      "context_start_line": 9,
+      "context_end_line": 19,
+      "confidence": "Medium"
+    },
+    {
+      "type": "Password",
+      "match": "Password = \"database_password_2024\"",
+      "line": 15,
+      "line_content": "const dbPassword = \"database_password_2024\";",
+      "context": "const githubToken = \"ghp_1234567890abcdefghijklmnopqrstuvwxyz12\"; \n \n// Hardcoded Credentials \nconst username = \"admin\"; \nconst password = \"SuperSecretPassword123!\"; \nconst dbPassword = \"database_password_2024\"; \nconst email = \"admin@example.com\"; \n \n// API Configuration \nconst baseURL = \" `https://api.example.com/v1` \"; \nconst apiUrl = \" `https://api.secureapp.com/endpoint` \"; ",
+      "context_start_line": 10,
+      "context_end_line": 20,
+      "confidence": "Medium"
+    },
+    {
+      "type": "Database Password",
+      "match": "dbPassword = \"database_password_2024\"",
+      "line": 15,
+      "line_content": "const dbPassword = \"database_password_2024\";",
+      "context": "const githubToken = \"ghp_1234567890abcdefghijklmnopqrstuvwxyz12\"; \n \n// Hardcoded Credentials \nconst username = \"admin\"; \nconst password = \"SuperSecretPassword123!\"; \nconst dbPassword = \"database_password_2024\"; \nconst email = \"admin@example.com\"; \n \n// API Configuration \nconst baseURL = \" `https://api.example.com/v1` \"; \nconst apiUrl = \" `https://api.secureapp.com/endpoint` \"; ",
+      "context_start_line": 10,
+      "context_end_line": 20,
+      "confidence": "Medium"
+    },
+    {
+      "type": "Username",
+      "match": "username = \"admin\"",
+      "line": 13,
+      "line_content": "const username = \"admin\";",
+      "context": "const awsSecret = \"wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\"; \nconst stripeKey = \"sk_live_51Habc123def456ghi789jkl012mno345pqr\"; \nconst githubToken = \"ghp_1234567890abcdefghijklmnopqrstuvwxyz12\"; \n \n// Hardcoded Credentials \nconst username = \"admin\"; \nconst password = \"SuperSecretPassword123!\"; \nconst dbPassword = \"database_password_2024\"; \nconst email = \"admin@example.com\"; \n \n// API Configuration ",
+      "context_start_line": 8,
+      "context_end_line": 18,
+      "confidence": "Medium"
+    },
+    {
+      "type": "Username",
+      "match": "login: \"/api/v1/auth/login\"",
+      "line": 97,
+      "line_content": "login: \"/api/v1/auth/login\",",
+      "context": "xhr.open(\"GET\", \"/api/status\"); \nxhr.send(); \n \n// API Paths \nconst endpoints = { \n    login: \"/api/v1/auth/login\", \n    logout: \"/api/v1/auth/logout\", \n    users: \"/api/v2/users\", \n    products: \"/api/products\", \n    cart: \"/api/cart\"\n};",
+      "context_start_line": 92,
+      "context_end_line": 102,
+      "confidence": "Medium"
+    }
   ],
   "xss_vulnerabilities": [
-    "innerHTML Assignment",
-    "innerHTML Assignment",
-    "innerHTML Assignment",
-    "innerHTML Assignment",
-    "outerHTML Assignment",
-    "document.write()",
-    "document.write()",
-    "eval() with User Input",
-    "React dangerouslySetInnerHTML",
-    "jQuery .html()",
-    "jQuery .append()",
-    "Location Manipulation",
-    "Location Manipulation",
-    "Location Manipulation",
-    "Location Manipulation"
+    {
+      "type": "innerHTML Assignment",
+      "match": ".innerHTML = userInput",
+      "line": 24,
+      "line_content": "document.getElementById(\"content\").innerHTML = userInput; // XSS: innerHTML with user input",
+      "context": "const baseURL = \" `https://api.example.com/v1` \"; \nconst apiUrl = \" `https://api.secureapp.com/endpoint` \"; \n \n// XSS Vulnerabilities \nfunction displayUserInput(userInput) { \n    document.getElementById(\"content\").innerHTML = userInput; // XSS: innerHTML with user input \n    return userInput; \n} \n \nfunction renderContent(content) { \n    const div = document.createElement(\"div\"); ",
+      "context_start_line": 19,
+      "context_end_line": 29,
+      "confidence": "High",
+      "severity": "high"
+    },
+    {
+      "type": "innerHTML Assignment",
+      "match": ".innerHTML = userData.name",
+      "line": 62,
+      "line_content": "element.innerHTML = userData.name; // Function with innerHTML",
+      "context": "} \n \n// XSS Functions \nfunction processUserData(userData) { \n    const element = document.getElementById(\"output\"); \n    element.innerHTML = userData.name; // Function with innerHTML \n} \n \nconst renderUser = function(userInput) { \n    document.getElementById(\"user\").innerHTML = userInput; // Arrow function with DOM manipulation \n}; ",
+      "context_start_line": 57,
+      "context_end_line": 67,
+      "confidence": "High",
+      "severity": "high"
+    },
+    {
+      "type": "innerHTML Assignment",
+      "match": ".innerHTML = userInput",
+      "line": 66,
+      "line_content": "document.getElementById(\"user\").innerHTML = userInput; // Arrow function with DOM manipulation",
+      "context": "    const element = document.getElementById(\"output\"); \n    element.innerHTML = userData.name; // Function with innerHTML \n} \n \nconst renderUser = function(userInput) { \n    document.getElementById(\"user\").innerHTML = userInput; // Arrow function with DOM manipulation \n}; \n \n// API Endpoints \nfetch(\"/api/users/123\"); \nfetch(`/api/data/${userId}`); ",
+      "context_start_line": 61,
+      "context_end_line": 71,
+      "confidence": "High",
+      "severity": "high"
+    },
+    {
+      "type": "innerHTML Assignment",
+      "match": ".innerHTML = userInput",
+      "line": 170,
+      "line_content": "document.getElementById(\"output\").innerHTML = userInput;",
+      "context": "// JWT Token (example) \nconst jwtToken = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\"; \n \n// Event handlers (potential XSS) \ndocument.getElementById(\"button\").onclick = function() { \n    document.getElementById(\"output\").innerHTML = userInput; \n}; \n \nwindow.onerror = function(msg, url, line) { \n    document.write(\"Error: \" + msg); // XSS: document.write in error handler \n}; ",
+      "context_start_line": 165,
+      "context_end_line": 175,
+      "confidence": "High",
+      "severity": "high"
+    },
+    {
+      "type": "outerHTML Assignment",
+      "match": ".outerHTML = content",
+      "line": 30,
+      "line_content": "div.outerHTML = content; // XSS: outerHTML assignment",
+      "context": "    return userInput; \n} \n \nfunction renderContent(content) { \n    const div = document.createElement(\"div\"); \n    div.outerHTML = content; // XSS: outerHTML assignment \n    return div; \n} \n \nfunction writeToPage(data) { \n    document.write(\"<h1>\" + data + \"</h1>\"); // XSS: document.write ",
+      "context_start_line": 25,
+      "context_end_line": 35,
+      "confidence": "High",
+      "severity": "high"
+    },
+    {
+      "type": "document.write()",
+      "match": "document.write(\"<h1>\" + data + \"</h1>\")",
+      "line": 35,
+      "line_content": "document.write(\"<h1>\" + data + \"</h1>\"); // XSS: document.write",
+      "context": "    div.outerHTML = content; // XSS: outerHTML assignment \n    return div; \n} \n \nfunction writeToPage(data) { \n    document.write(\"<h1>\" + data + \"</h1>\"); // XSS: document.write \n} \n \nfunction evalUserCode(userCode) { \n    eval(userCode); // XSS: eval with user input - CRITICAL \n} ",
+      "context_start_line": 30,
+      "context_end_line": 40,
+      "confidence": "High",
+      "severity": "high"
+    },
+    {
+      "type": "document.write()",
+      "match": "document.write(\"Error: \" + msg)",
+      "line": 174,
+      "line_content": "document.write(\"Error: \" + msg); // XSS: document.write in error handler",
+      "context": "document.getElementById(\"button\").onclick = function() { \n    document.getElementById(\"output\").innerHTML = userInput; \n}; \n \nwindow.onerror = function(msg, url, line) { \n    document.write(\"Error: \" + msg); // XSS: document.write in error handler \n}; \n \n// More API calls \nconst apiClient = { \n    baseURL: \" `https://api.production.com` \", ",
+      "context_start_line": 169,
+      "context_end_line": 179,
+      "confidence": "High",
+      "severity": "high"
+    },
+    {
+      "type": "eval() with User Input",
+      "match": "eval(code",
+      "line": 152,
+      "line_content": "const result = eval(code);",
+      "context": "// NOTE: This endpoint is deprecated \nfetch(\"/api/old-endpoint\"); \n \n// WARNING: This function uses eval - security risk \nfunction executeDynamicCode(code) { \n    const result = eval(code); \n    return result; \n} \n \n// Suspicious comment about secret \n// secret: admin_backdoor_key_2024 ",
+      "context_start_line": 147,
+      "context_end_line": 157,
+      "confidence": "High",
+      "severity": "critical"
+    },
+    {
+      "type": "React dangerouslySetInnerHTML",
+      "match": "dangerouslySetInnerHTML={{ __html: userContent }",
+      "line": 44,
+      "line_content": "return <div dangerouslySetInnerHTML={{ __html: userContent }} />; // XSS: React dangerouslySetInnerHTML",
+      "context": "    eval(userCode); // XSS: eval with user input - CRITICAL \n} \n \n// React XSS \nfunction ReactComponent({ userContent }) { \n    return <div dangerouslySetInnerHTML={{ __html: userContent }} />; // XSS: React dangerouslySetInnerHTML \n} \n \n// jQuery XSS \nfunction updateContent(content) { \n    $(\"#userContent\").html(content); // XSS: jQuery .html() ",
+      "context_start_line": 39,
+      "context_end_line": 49,
+      "confidence": "High",
+      "severity": "high"
+    },
+    {
+      "type": "jQuery .html()",
+      "match": "$(\"#userContent\").html(content)",
+      "line": 49,
+      "line_content": "$(\"#userContent\").html(content); // XSS: jQuery .html()",
+      "context": "    return <div dangerouslySetInnerHTML={{ __html: userContent }} />; // XSS: React dangerouslySetInnerHTML \n} \n \n// jQuery XSS \nfunction updateContent(content) { \n    $(\"#userContent\").html(content); // XSS: jQuery .html() \n    $(\"#sidebar\").append(content); // XSS: jQuery .append() \n} \n \n// Location manipulation \nfunction redirect(url) { ",
+      "context_start_line": 44,
+      "context_end_line": 54,
+      "confidence": "Medium",
+      "severity": "medium"
+    },
+    {
+      "type": "jQuery .append()",
+      "match": "$(\"#sidebar\").append(content)",
+      "line": 50,
+      "line_content": "$(\"#sidebar\").append(content); // XSS: jQuery .append()",
+      "context": "} \n \n// jQuery XSS \nfunction updateContent(content) { \n    $(\"#userContent\").html(content); // XSS: jQuery .html() \n    $(\"#sidebar\").append(content); // XSS: jQuery .append() \n} \n \n// Location manipulation \nfunction redirect(url) { \n    location.href = url; // Potential XSS ",
+      "context_start_line": 45,
+      "context_end_line": 55,
+      "confidence": "Medium",
+      "severity": "medium"
+    },
+    {
+      "type": "Location Manipulation",
+      "match": "location.href = url",
+      "line": 55,
+      "line_content": "location.href = url; // Potential XSS",
+      "context": "    $(\"#sidebar\").append(content); // XSS: jQuery .append() \n} \n \n// Location manipulation \nfunction redirect(url) { \n    location.href = url; // Potential XSS \n    location.hash = \"#\" + url; // Potential XSS \n} \n \n// XSS Functions \nfunction processUserData(userData) { ",
+      "context_start_line": 50,
+      "context_end_line": 60,
+      "confidence": "Medium",
+      "severity": "medium"
+    },
+    {
+      "type": "Location Manipulation",
+      "match": "location.hash = \"#\" + url",
+      "line": 56,
+      "line_content": "location.hash = \"#\" + url; // Potential XSS",
+      "context": "} \n \n// Location manipulation \nfunction redirect(url) { \n    location.href = url; // Potential XSS \n    location.hash = \"#\" + url; // Potential XSS \n} \n \n// XSS Functions \nfunction processUserData(userData) { \n    const element = document.getElementById(\"output\"); ",
+      "context_start_line": 51,
+      "context_end_line": 61,
+      "confidence": "Medium",
+      "severity": "medium"
+    },
+    {
+      "type": "Location Manipulation",
+      "match": "location.href = \"/dashboard?user=admin&role=super\"",
+      "line": 88,
+      "line_content": "location.href = \"/dashboard?user=admin&role=super\";",
+      "context": "const apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\"); \nxhr.send(); ",
+      "context_start_line": 83,
+      "context_end_line": 93,
+      "confidence": "Medium",
+      "severity": "medium"
+    },
+    {
+      "type": "Location Manipulation",
+      "match": "location.search = \"?email=test@test.com&key=secret\"",
+      "line": 89,
+      "line_content": "window.location.search = \"?email=test@test.com&key=secret\";",
+      "context": "const apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\"); \nxhr.send(); \n ",
+      "context_start_line": 84,
+      "context_end_line": 94,
+      "confidence": "Medium",
+      "severity": "medium"
+    }
   ],
   "emails": [
-    "admin@example.com",
-    "user@example.com",
-    "test@test.com",
-    "support@company.com",
-    "admin@secureapp.io",
-    "contact@example.org"
+    {
+      "type": "Email Address",
+      "match": "admin@example.com",
+      "line": 16,
+      "line_content": "const email = \"admin@example.com\";",
+      "context": " \n// Hardcoded Credentials \nconst username = \"admin\"; \nconst password = \"SuperSecretPassword123!\"; \nconst dbPassword = \"database_password_2024\"; \nconst email = \"admin@example.com\"; \n \n// API Configuration \nconst baseURL = \" `https://api.example.com/v1` \"; \nconst apiUrl = \" `https://api.secureapp.com/endpoint` \"; \n ",
+      "context_start_line": 11,
+      "context_end_line": 21,
+      "confidence": "High"
+    },
+    {
+      "type": "Email Address",
+      "match": "user@example.com",
+      "line": 83,
+      "line_content": "const apiUrl2 = \"/login?email=user@example.com&password=secret123\";",
+      "context": "$.get(\"/api/cart\"); \n$.getJSON(\"/api/items\"); \n \n// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; ",
+      "context_start_line": 78,
+      "context_end_line": 88,
+      "confidence": "High"
+    },
+    {
+      "type": "Email Address",
+      "match": "test@test.com",
+      "line": 89,
+      "line_content": "window.location.search = \"?email=test@test.com&key=secret\";",
+      "context": "const apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\"); \nxhr.send(); \n ",
+      "context_start_line": 84,
+      "context_end_line": 94,
+      "confidence": "High"
+    },
+    {
+      "type": "Email Address",
+      "match": "support@company.com",
+      "line": 161,
+      "line_content": "const supportEmail = \"support@company.com\";",
+      "context": "// Suspicious comment about secret \n// secret: admin_backdoor_key_2024 \n// token: temp_dev_token_xyz789 \n \n// Email addresses in code \nconst supportEmail = \"support@company.com\"; \nconst adminEmail = \"admin@secureapp.io\"; \nconst contactEmail = \"contact@example.org\"; \n \n// JWT Token (example) \nconst jwtToken = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\"; ",
+      "context_start_line": 156,
+      "context_end_line": 166,
+      "confidence": "High"
+    },
+    {
+      "type": "Email Address",
+      "match": "admin@secureapp.io",
+      "line": 162,
+      "line_content": "const adminEmail = \"admin@secureapp.io\";",
+      "context": "// secret: admin_backdoor_key_2024 \n// token: temp_dev_token_xyz789 \n \n// Email addresses in code \nconst supportEmail = \"support@company.com\"; \nconst adminEmail = \"admin@secureapp.io\"; \nconst contactEmail = \"contact@example.org\"; \n \n// JWT Token (example) \nconst jwtToken = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\"; \n ",
+      "context_start_line": 157,
+      "context_end_line": 167,
+      "confidence": "High"
+    },
+    {
+      "type": "Email Address",
+      "match": "contact@example.org",
+      "line": 163,
+      "line_content": "const contactEmail = \"contact@example.org\";",
+      "context": "// token: temp_dev_token_xyz789 \n \n// Email addresses in code \nconst supportEmail = \"support@company.com\"; \nconst adminEmail = \"admin@secureapp.io\"; \nconst contactEmail = \"contact@example.org\"; \n \n// JWT Token (example) \nconst jwtToken = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\"; \n \n// Event handlers (potential XSS) ",
+      "context_start_line": 158,
+      "context_end_line": 168,
+      "confidence": "High"
+    }
   ],
   "api_endpoints": [
-    "/api/users/123",
-    "/app?key=kjhsdjkfhsjk&action=view",
-    "/api/old-endpoint",
-    "/api/data/${userId}",
-    "/api/users/${userId}?key=${apiKey}",
-    "/api/status",
-    "/api/products",
-    "/api/orders",
-    "/api/login",
-    "/api/checkout",
-    "/api/cart",
-    "/api/items",
-    "/api/checkout",
-    "/api/data?id=12345&session=xyz789",
-    "/api/v1/auth/login",
-    "/api/v1/auth/logout",
-    "/api/v2/users",
-    "/api/products",
-    "/api/cart",
-    "/v3/orders",
-    "/v1/auth",
-    "/v2/data",
-    "/v1/upload",
-    " `https://api.production.com` ",
-    " `https://api.secureapp.com/endpoint` "
+    {
+      "method": "fetch()",
+      "path": "/api/users/123",
+      "line": 70,
+      "full_match": "fetch(\"/api/users/123\"",
+      "line_content": "fetch(\"/api/users/123\");"
+    },
+    {
+      "method": "fetch()",
+      "path": "/app?key=kjhsdjkfhsjk&action=view",
+      "line": 87,
+      "full_match": "fetch(\"/app?key=kjhsdjkfhsjk&action=view\"",
+      "line_content": "fetch(\"/app?key=kjhsdjkfhsjk&action=view\");"
+    },
+    {
+      "method": "fetch()",
+      "path": "/api/old-endpoint",
+      "line": 148,
+      "full_match": "fetch(\"/api/old-endpoint\"",
+      "line_content": "fetch(\"/api/old-endpoint\");"
+    },
+    {
+      "method": "fetch() (template)",
+      "path": "/api/data/${userId}",
+      "line": 71,
+      "full_match": "fetch(`/api/data/${userId}`",
+      "line_content": "fetch(`/api/data/${userId}`);"
+    },
+    {
+      "method": "fetch() (template)",
+      "path": "/api/users/${userId}?key=${apiKey}",
+      "line": 117,
+      "full_match": "fetch(`/api/users/${userId}?key=${apiKey}`",
+      "line_content": "return fetch(`/api/users/${userId}?key=${apiKey}`);"
+    },
+    {
+      "method": "XMLHttpRequest",
+      "path": "/api/status",
+      "line": 92,
+      "full_match": ".open(\"GET\", \"/api/status\"",
+      "line_content": "xhr.open(\"GET\", \"/api/status\");"
+    },
+    {
+      "method": "axios",
+      "path": "/api/products",
+      "line": 72,
+      "full_match": "axios.get(\"/api/products\"",
+      "line_content": "axios.get(\"/api/products\");"
+    },
+    {
+      "method": "axios",
+      "path": "/api/orders",
+      "line": 73,
+      "full_match": "axios.post(\"/api/orders\"",
+      "line_content": "axios.post(\"/api/orders\", { data: orderData });"
+    },
+    {
+      "method": "axios",
+      "path": "/api/login",
+      "line": 122,
+      "full_match": "axios.post(\"/api/login\"",
+      "line_content": "return axios.post(\"/api/login\", { username, password, token });"
+    },
+    {
+      "method": "jQuery AJAX",
+      "path": "/api/checkout",
+      "line": 74,
+      "full_match": "$.ajax({ \n    url: \"/api/checkout\"",
+      "line_content": "$.ajax({"
+    },
+    {
+      "method": "jQuery AJAX (short)",
+      "path": "/api/cart",
+      "line": 78,
+      "full_match": "$.get(\"/api/cart\"",
+      "line_content": "$.get(\"/api/cart\");"
+    },
+    {
+      "method": "jQuery getJSON",
+      "path": "/api/items",
+      "line": 79,
+      "full_match": "$.getJSON(\"/api/items\"",
+      "line_content": "$.getJSON(\"/api/items\");"
+    },
+    {
+      "method": "API Path",
+      "path": "/api/checkout",
+      "line": 75,
+      "full_match": "\"/api/checkout\"",
+      "line_content": "url: \"/api/checkout\","
+    },
+    {
+      "method": "API Path",
+      "path": "/api/data?id=12345&session=xyz789",
+      "line": 85,
+      "full_match": "\"/api/data?id=12345&session=xyz789\"",
+      "line_content": "const apiUrl4 = \"/api/data?id=12345&session=xyz789\";"
+    },
+    {
+      "method": "API Path",
+      "path": "/api/v1/auth/login",
+      "line": 97,
+      "full_match": "\"/api/v1/auth/login\"",
+      "line_content": "login: \"/api/v1/auth/login\","
+    },
+    {
+      "method": "API Path",
+      "path": "/api/v1/auth/logout",
+      "line": 98,
+      "full_match": "\"/api/v1/auth/logout\"",
+      "line_content": "logout: \"/api/v1/auth/logout\","
+    },
+    {
+      "method": "API Path",
+      "path": "/api/v2/users",
+      "line": 99,
+      "full_match": "\"/api/v2/users\"",
+      "line_content": "users: \"/api/v2/users\","
+    },
+    {
+      "method": "API Path",
+      "path": "/api/products",
+      "line": 100,
+      "full_match": "\"/api/products\"",
+      "line_content": "products: \"/api/products\","
+    },
+    {
+      "method": "API Path",
+      "path": "/api/cart",
+      "line": 101,
+      "full_match": "\"/api/cart\"",
+      "line_content": "cart: \"/api/cart\""
+    },
+    {
+      "method": "API Versioned Path",
+      "path": "/v3/orders",
+      "line": 112,
+      "full_match": "\"/v3/orders\"",
+      "line_content": "orders: \"/v3/orders\""
+    },
+    {
+      "method": "API Versioned Path",
+      "path": "/v1/auth",
+      "line": 181,
+      "full_match": "\"/v1/auth\"",
+      "line_content": "auth: \"/v1/auth\","
+    },
+    {
+      "method": "API Versioned Path",
+      "path": "/v2/data",
+      "line": 182,
+      "full_match": "\"/v2/data\"",
+      "line_content": "data: \"/v2/data\","
+    },
+    {
+      "method": "API Versioned Path",
+      "path": "/v1/upload",
+      "line": 183,
+      "full_match": "\"/v1/upload\"",
+      "line_content": "upload: \"/v1/upload\""
+    },
+    {
+      "method": "Base URL",
+      "path": " `https://api.production.com` ",
+      "line": 179,
+      "full_match": "baseURL: \" `https://api.production.com` \"",
+      "line_content": "baseURL: \" `https://api.production.com` \","
+    },
+    {
+      "method": "API URL Variable",
+      "path": " `https://api.secureapp.com/endpoint` ",
+      "line": 20,
+      "full_match": "apiUrl = \" `https://api.secureapp.com/endpoint` \"",
+      "line_content": "const apiUrl = \" `https://api.secureapp.com/endpoint` \";"
+    }
   ],
   "parameters": [
-    "/app?key",
-    "/login?email",
-    "/download?file",
-    "/api/data?id",
-    "/app?key",
-    "/dashboard?user",
-    "email",
-    "?key=kjhsdjkfhsjk",
-    "?email=user@example.com",
-    "&password=secret123",
-    "?file=document.pdf",
-    "&token=abc123",
-    "?id=12345",
-    "&session=xyz789",
-    "?uid=999",
-    "&access_token=token123`",
-    "?key=kjhsdjkfhsjk",
-    "&action=view",
-    "?user=admin",
-    "&role=super",
-    "?email=test@test.com",
-    "&key=secret",
-    "?key=${apiKey}`);",
-    "`https://api.example.com/v1/users?uid",
-    "}; \n \n// Parameters \nfunction getUserData(userId, apiKey) { \n    return fetch(`/api/users/${userId}?",
-    "\" && pass === \"",
-    "/data?key",
-    "userInput",
-    "data",
-    "userCode",
-    "{ userContent }",
-    "url",
-    "userData",
-    "userId",
-    "params",
-    "user",
-    "code",
-    "method",
-    "userInput",
-    "msg",
-    "\"content\"",
-    "\"div\"",
-    "\"<h1>\" + data + \"</h1>\"",
-    "\"output\"",
-    "\"user\"",
-    "\"/api/products\"",
-    "\"/api/orders\"",
-    "{ \n    url",
-    "\"/api/cart\"",
-    "\"/api/items\"",
-    "\"GET\"",
-    "\"/api/login\"",
-    "\"key\"",
-    "\"button\"",
-    "\"output\"",
-    "\"Error",
-    "data",
-    "URLSearchParams(window.location.search)",
-    "window.location.search",
-    "/api/products",
-    "/api/cart",
-    "key",
-    "data",
-    "post",
-    "{ data",
-    ".get(\"/api/cart\"); \n$.getJSON(\"/api/items\"); \n \n// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\")",
-    "pass",
-    "data",
-    "method",
-    "location.href = \"/dashboard?user=admin&role=super\"",
-    "location.search = \"?email=test@test.com&key=secret\"",
-    "window.location.search = \"?email=test@test.com&key=secret\"",
-    "); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url:",
-    "\"; \nfetch(\"/app?key",
-    "/api/users/${userId}?key",
-    "return <div dangerouslySetInnerHTML={{ __html",
-    "data",
-    "url",
-    "login",
-    "baseURL",
-    "return fetch(endpoint",
-    "username",
-    "userContent"
+    {
+      "type": "URL Query Parameter",
+      "parameter": "/app?key=kjhsdjkfhsjk",
+      "param_name": "/app?key",
+      "param_value": "kjhsdjkfhsjk",
+      "line": 82,
+      "full_match": "\"/app?key=kjhsdjkfhsjk\"",
+      "line_content": "const apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; ",
+      "context": "}); \n$.get(\"/api/cart\"); \n$.getJSON(\"/api/items\"); \n \n// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); ",
+      "context_start_line": 77,
+      "context_end_line": 87
+    },
+    {
+      "type": "URL Query Parameter",
+      "parameter": "/login?email=user@example.com",
+      "param_name": "/login?email",
+      "param_value": "user@example.com",
+      "line": 83,
+      "full_match": "\"/login?email=user@example.com&password=secret123\"",
+      "line_content": "const apiUrl2 = \"/login?email=user@example.com&password=secret123\"; ",
+      "context": "$.get(\"/api/cart\"); \n$.getJSON(\"/api/items\"); \n \n// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; ",
+      "context_start_line": 78,
+      "context_end_line": 88
+    },
+    {
+      "type": "URL Query Parameter",
+      "parameter": "/download?file=document.pdf",
+      "param_name": "/download?file",
+      "param_value": "document.pdf",
+      "line": 84,
+      "full_match": "\"/download?file=document.pdf&token=abc123\"",
+      "line_content": "const apiUrl3 = \"/download?file=document.pdf&token=abc123\"; ",
+      "context": "$.getJSON(\"/api/items\"); \n \n// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; ",
+      "context_start_line": 79,
+      "context_end_line": 89
+    },
+    {
+      "type": "URL Query Parameter",
+      "parameter": "/api/data?id=12345",
+      "param_name": "/api/data?id",
+      "param_value": "12345",
+      "line": 85,
+      "full_match": "\"/api/data?id=12345&session=xyz789\"",
+      "line_content": "const apiUrl4 = \"/api/data?id=12345&session=xyz789\"; ",
+      "context": " \n// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n ",
+      "context_start_line": 80,
+      "context_end_line": 90
+    },
+    {
+      "type": "URL Query Parameter",
+      "parameter": "/app?key=kjhsdjkfhsjk",
+      "param_name": "/app?key",
+      "param_value": "kjhsdjkfhsjk",
+      "line": 87,
+      "full_match": "\"/app?key=kjhsdjkfhsjk&action=view\"",
+      "line_content": "fetch(\"/app?key=kjhsdjkfhsjk&action=view\"); ",
+      "context": "const apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\"); ",
+      "context_start_line": 82,
+      "context_end_line": 92
+    },
+    {
+      "type": "URL Query Parameter",
+      "parameter": "/dashboard?user=admin",
+      "param_name": "/dashboard?user",
+      "param_value": "admin",
+      "line": 88,
+      "full_match": "\"/dashboard?user=admin&role=super\"",
+      "line_content": "location.href = \"/dashboard?user=admin&role=super\"; ",
+      "context": "const apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\"); \nxhr.send(); ",
+      "context_start_line": 83,
+      "context_end_line": 93
+    },
+    {
+      "type": "URL Query Parameter",
+      "parameter": "email=test@test.com",
+      "param_name": "email",
+      "param_value": "test@test.com",
+      "line": 89,
+      "full_match": "\"?email=test@test.com&key=secret\"",
+      "line_content": "window.location.search = \"?email=test@test.com&key=secret\"; ",
+      "context": "const apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\"); \nxhr.send(); \n ",
+      "context_start_line": 84,
+      "context_end_line": 94
+    },
+    {
+      "type": "URL with Query Parameters",
+      "parameter": "`https://api.example.com/v1/users?uid=999",
+      "param_name": "`https://api.example.com/v1/users?uid",
+      "param_value": "999",
+      "line": 86,
+      "full_match": "\" `https://api.example.com/v1/users?uid=999&access_token=token123` \"",
+      "line_content": "const apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; ",
+      "context": "// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); ",
+      "context_start_line": 81,
+      "context_end_line": 91
+    },
+    {
+      "type": "URL with Query Parameters",
+      "parameter": "}; \n \n// Parameters \nfunction getUserData(userId, apiKey) { \n    return fetch(`/api/users/${userId}?key=${apiKey}`); \n} \n \nfunction processRequest(params) { \n    const { username, password, token } = params; \n    return axios.post(",
+      "param_name": "}; \n \n// Parameters \nfunction getUserData(userId, apiKey) { \n    return fetch(`/api/users/${userId}?",
+      "param_value": "${apiKey}`); \n} \n \nfunction processRequest(params) { \n    const { username, password, token } = params; \n    return axios.post(",
+      "line": 112,
+      "full_match": "\" \n}; \n \n// Parameters \nfunction getUserData(userId, apiKey) { \n    return fetch(`/api/users/${userId}?key=${apiKey}`); \n} \n \nfunction processRequest(params) { \n    const { username, password, token } = params; \n    return axios.post(\"",
+      "line_content": "    orders: \"/v3/orders\" ",
+      "context": "  .header {\n    font-size: 2rem;\n    color: #333;\n  }\n`;\n    orders: \"/v3/orders\" \n}; \n \n// Parameters \nfunction getUserData(userId, apiKey) { \n    return fetch(`/api/users/${userId}?key=${apiKey}`); ",
+      "context_start_line": 107,
+      "context_end_line": 117
+    },
+    {
+      "type": "Function Parameters",
+      "parameter": "userInput",
+      "param_name": "userInput",
+      "param_value": null,
+      "line": 23,
+      "full_match": "function displayUserInput(userInput)",
+      "line_content": "function displayUserInput(userInput) { ",
+      "context": "// API Configuration \nconst baseURL = \" `https://api.example.com/v1` \"; \nconst apiUrl = \" `https://api.secureapp.com/endpoint` \"; \n \n// XSS Vulnerabilities \nfunction displayUserInput(userInput) { \n    document.getElementById(\"content\").innerHTML = userInput; // XSS: innerHTML with user input \n    return userInput; \n} \n \nfunction renderContent(content) { ",
+      "context_start_line": 18,
+      "context_end_line": 28
+    },
+    {
+      "type": "Function Parameters",
+      "parameter": "data",
+      "param_name": "data",
+      "param_value": null,
+      "line": 34,
+      "full_match": "function writeToPage(data)",
+      "line_content": "function writeToPage(data) { ",
+      "context": "    const div = document.createElement(\"div\"); \n    div.outerHTML = content; // XSS: outerHTML assignment \n    return div; \n} \n \nfunction writeToPage(data) { \n    document.write(\"<h1>\" + data + \"</h1>\"); // XSS: document.write \n} \n \nfunction evalUserCode(userCode) { \n    eval(userCode); // XSS: eval with user input - CRITICAL ",
+      "context_start_line": 29,
+      "context_end_line": 39
+    },
+    {
+      "type": "Function Parameters",
+      "parameter": "userCode",
+      "param_name": "userCode",
+      "param_value": null,
+      "line": 38,
+      "full_match": "function evalUserCode(userCode)",
+      "line_content": "function evalUserCode(userCode) { ",
+      "context": " \nfunction writeToPage(data) { \n    document.write(\"<h1>\" + data + \"</h1>\"); // XSS: document.write \n} \n \nfunction evalUserCode(userCode) { \n    eval(userCode); // XSS: eval with user input - CRITICAL \n} \n \n// React XSS \nfunction ReactComponent({ userContent }) { ",
+      "context_start_line": 33,
+      "context_end_line": 43
+    },
+    {
+      "type": "Function Parameters",
+      "parameter": "{ userContent }",
+      "param_name": "{ userContent }",
+      "param_value": null,
+      "line": 43,
+      "full_match": "function ReactComponent({ userContent })",
+      "line_content": "function ReactComponent({ userContent }) { ",
+      "context": "function evalUserCode(userCode) { \n    eval(userCode); // XSS: eval with user input - CRITICAL \n} \n \n// React XSS \nfunction ReactComponent({ userContent }) { \n    return <div dangerouslySetInnerHTML={{ __html: userContent }} />; // XSS: React dangerouslySetInnerHTML \n} \n \n// jQuery XSS \nfunction updateContent(content) { ",
+      "context_start_line": 38,
+      "context_end_line": 48
+    },
+    {
+      "type": "Function Parameters",
+      "parameter": "url",
+      "param_name": "url",
+      "param_value": null,
+      "line": 54,
+      "full_match": "function redirect(url)",
+      "line_content": "function redirect(url) { ",
+      "context": "    $(\"#userContent\").html(content); // XSS: jQuery .html() \n    $(\"#sidebar\").append(content); // XSS: jQuery .append() \n} \n \n// Location manipulation \nfunction redirect(url) { \n    location.href = url; // Potential XSS \n    location.hash = \"#\" + url; // Potential XSS \n} \n \n// XSS Functions ",
+      "context_start_line": 49,
+      "context_end_line": 59
+    },
+    {
+      "type": "Function Parameters",
+      "parameter": "userData",
+      "param_name": "userData",
+      "param_value": null,
+      "line": 60,
+      "full_match": "function processUserData(userData)",
+      "line_content": "function processUserData(userData) { ",
+      "context": "    location.href = url; // Potential XSS \n    location.hash = \"#\" + url; // Potential XSS \n} \n \n// XSS Functions \nfunction processUserData(userData) { \n    const element = document.getElementById(\"output\"); \n    element.innerHTML = userData.name; // Function with innerHTML \n} \n \nconst renderUser = function(userInput) { ",
+      "context_start_line": 55,
+      "context_end_line": 65
+    },
+    {
+      "type": "Function Parameters",
+      "parameter": "userId, apiKey",
+      "param_name": "userId",
+      "param_value": null,
+      "line": 116,
+      "full_match": "function getUserData(userId, apiKey)",
+      "line_content": "function getUserData(userId, apiKey) { ",
+      "context": "`;\n    orders: \"/v3/orders\" \n}; \n \n// Parameters \nfunction getUserData(userId, apiKey) { \n    return fetch(`/api/users/${userId}?key=${apiKey}`); \n} \n \nfunction processRequest(params) { \n    const { username, password, token } = params; ",
+      "context_start_line": 111,
+      "context_end_line": 121
+    },
+    {
+      "type": "Function Parameters",
+      "parameter": "params",
+      "param_name": "params",
+      "param_value": null,
+      "line": 120,
+      "full_match": "function processRequest(params)",
+      "line_content": "function processRequest(params) { ",
+      "context": "// Parameters \nfunction getUserData(userId, apiKey) { \n    return fetch(`/api/users/${userId}?key=${apiKey}`); \n} \n \nfunction processRequest(params) { \n    const { username, password, token } = params; \n    return axios.post(\"/api/login\", { username, password, token }); \n} \n \nconst urlParams = new URLSearchParams(window.location.search); ",
+      "context_start_line": 115,
+      "context_end_line": 125
+    },
+    {
+      "type": "Function Parameters",
+      "parameter": "user, pass",
+      "param_name": "user",
+      "param_value": null,
+      "line": 136,
+      "full_match": "function authenticate(user, pass)",
+      "line_content": "function authenticate(user, pass) { ",
+      "context": "const scriptPath = \"../scripts/utils.js\"; \nconst dataDir = \"/data/exports/\"; \nconst logFile = \"logs/application.log\"; \n \n// HACK: Temporary fix for authentication \nfunction authenticate(user, pass) { \n    if (user === \"admin\" && pass === \"admin123\") { \n        return true; // BUG: Hardcoded credentials \n    } \n    return false; \n} ",
+      "context_start_line": 131,
+      "context_end_line": 141
+    },
+    {
+      "type": "Function Parameters",
+      "parameter": "code",
+      "param_name": "code",
+      "param_value": null,
+      "line": 151,
+      "full_match": "function executeDynamicCode(code)",
+      "line_content": "function executeDynamicCode(code) { ",
+      "context": " \n// NOTE: This endpoint is deprecated \nfetch(\"/api/old-endpoint\"); \n \n// WARNING: This function uses eval - security risk \nfunction executeDynamicCode(code) { \n    const result = eval(code); \n    return result; \n} \n \n// Suspicious comment about secret ",
+      "context_start_line": 146,
+      "context_end_line": 156
+    },
+    {
+      "type": "Function Parameters",
+      "parameter": "method, endpoint, data, headers",
+      "param_name": "method",
+      "param_value": null,
+      "line": 188,
+      "full_match": "function makeRequest(method, endpoint, data, headers)",
+      "line_content": "function makeRequest(method, endpoint, data, headers) { ",
+      "context": "        upload: \"/v1/upload\" \n    } \n}; \n \n// Function parameters \nfunction makeRequest(method, endpoint, data, headers) { \n    return fetch(endpoint, { \n        method: method, \n        body: JSON.stringify(data), \n        headers: headers \n    }); ",
+      "context_start_line": 183,
+      "context_end_line": 193
+    },
+    {
+      "type": "Anonymous Function Parameters",
+      "parameter": "userInput",
+      "param_name": "userInput",
+      "param_value": null,
+      "line": 65,
+      "full_match": "function(userInput)",
+      "line_content": "const renderUser = function(userInput) { ",
+      "context": "function processUserData(userData) { \n    const element = document.getElementById(\"output\"); \n    element.innerHTML = userData.name; // Function with innerHTML \n} \n \nconst renderUser = function(userInput) { \n    document.getElementById(\"user\").innerHTML = userInput; // Arrow function with DOM manipulation \n}; \n \n// API Endpoints \nfetch(\"/api/users/123\"); ",
+      "context_start_line": 60,
+      "context_end_line": 70
+    },
+    {
+      "type": "Anonymous Function Parameters",
+      "parameter": "msg, url, line",
+      "param_name": "msg",
+      "param_value": null,
+      "line": 173,
+      "full_match": "function(msg, url, line)",
+      "line_content": "window.onerror = function(msg, url, line) { ",
+      "context": "// Event handlers (potential XSS) \ndocument.getElementById(\"button\").onclick = function() { \n    document.getElementById(\"output\").innerHTML = userInput; \n}; \n \nwindow.onerror = function(msg, url, line) { \n    document.write(\"Error: \" + msg); // XSS: document.write in error handler \n}; \n \n// More API calls \nconst apiClient = { ",
+      "context_start_line": 168,
+      "context_end_line": 178
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"content\"",
+      "param_name": "\"content\"",
+      "param_value": null,
+      "line": 24,
+      "full_match": ".getElementById(\"content\")",
+      "line_content": "    document.getElementById(\"content\").innerHTML = userInput; // XSS: innerHTML with user input ",
+      "context": "const baseURL = \" `https://api.example.com/v1` \"; \nconst apiUrl = \" `https://api.secureapp.com/endpoint` \"; \n \n// XSS Vulnerabilities \nfunction displayUserInput(userInput) { \n    document.getElementById(\"content\").innerHTML = userInput; // XSS: innerHTML with user input \n    return userInput; \n} \n \nfunction renderContent(content) { \n    const div = document.createElement(\"div\"); ",
+      "context_start_line": 19,
+      "context_end_line": 29
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"div\"",
+      "param_name": "\"div\"",
+      "param_value": null,
+      "line": 29,
+      "full_match": ".createElement(\"div\")",
+      "line_content": "    const div = document.createElement(\"div\"); ",
+      "context": "    document.getElementById(\"content\").innerHTML = userInput; // XSS: innerHTML with user input \n    return userInput; \n} \n \nfunction renderContent(content) { \n    const div = document.createElement(\"div\"); \n    div.outerHTML = content; // XSS: outerHTML assignment \n    return div; \n} \n \nfunction writeToPage(data) { ",
+      "context_start_line": 24,
+      "context_end_line": 34
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"<h1>\" + data + \"</h1>\"",
+      "param_name": "\"<h1>\" + data + \"</h1>\"",
+      "param_value": null,
+      "line": 35,
+      "full_match": ".write(\"<h1>\" + data + \"</h1>\")",
+      "line_content": "    document.write(\"<h1>\" + data + \"</h1>\"); // XSS: document.write ",
+      "context": "    div.outerHTML = content; // XSS: outerHTML assignment \n    return div; \n} \n \nfunction writeToPage(data) { \n    document.write(\"<h1>\" + data + \"</h1>\"); // XSS: document.write \n} \n \nfunction evalUserCode(userCode) { \n    eval(userCode); // XSS: eval with user input - CRITICAL \n} ",
+      "context_start_line": 30,
+      "context_end_line": 40
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"output\"",
+      "param_name": "\"output\"",
+      "param_value": null,
+      "line": 61,
+      "full_match": ".getElementById(\"output\")",
+      "line_content": "    const element = document.getElementById(\"output\"); ",
+      "context": "    location.hash = \"#\" + url; // Potential XSS \n} \n \n// XSS Functions \nfunction processUserData(userData) { \n    const element = document.getElementById(\"output\"); \n    element.innerHTML = userData.name; // Function with innerHTML \n} \n \nconst renderUser = function(userInput) { \n    document.getElementById(\"user\").innerHTML = userInput; // Arrow function with DOM manipulation ",
+      "context_start_line": 56,
+      "context_end_line": 66
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"user\"",
+      "param_name": "\"user\"",
+      "param_value": null,
+      "line": 66,
+      "full_match": ".getElementById(\"user\")",
+      "line_content": "    document.getElementById(\"user\").innerHTML = userInput; // Arrow function with DOM manipulation ",
+      "context": "    const element = document.getElementById(\"output\"); \n    element.innerHTML = userData.name; // Function with innerHTML \n} \n \nconst renderUser = function(userInput) { \n    document.getElementById(\"user\").innerHTML = userInput; // Arrow function with DOM manipulation \n}; \n \n// API Endpoints \nfetch(\"/api/users/123\"); \nfetch(`/api/data/${userId}`); ",
+      "context_start_line": 61,
+      "context_end_line": 71
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"/api/products\"",
+      "param_name": "\"/api/products\"",
+      "param_value": null,
+      "line": 72,
+      "full_match": ".get(\"/api/products\")",
+      "line_content": "axios.get(\"/api/products\"); ",
+      "context": "}; \n \n// API Endpoints \nfetch(\"/api/users/123\"); \nfetch(`/api/data/${userId}`); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}); ",
+      "context_start_line": 67,
+      "context_end_line": 77
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"/api/orders\", { data: orderData }",
+      "param_name": "\"/api/orders\"",
+      "param_value": null,
+      "line": 73,
+      "full_match": ".post(\"/api/orders\", { data: orderData })",
+      "line_content": "axios.post(\"/api/orders\", { data: orderData }); ",
+      "context": " \n// API Endpoints \nfetch(\"/api/users/123\"); \nfetch(`/api/data/${userId}`); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}); \n$.get(\"/api/cart\"); ",
+      "context_start_line": 68,
+      "context_end_line": 78
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "{ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}",
+      "param_name": "{ \n    url",
+      "param_value": null,
+      "line": 74,
+      "full_match": ".ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n})",
+      "line_content": "$.ajax({ ",
+      "context": "// API Endpoints \nfetch(\"/api/users/123\"); \nfetch(`/api/data/${userId}`); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}); \n$.get(\"/api/cart\"); \n$.getJSON(\"/api/items\"); ",
+      "context_start_line": 69,
+      "context_end_line": 79
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"/api/cart\"",
+      "param_name": "\"/api/cart\"",
+      "param_value": null,
+      "line": 78,
+      "full_match": ".get(\"/api/cart\")",
+      "line_content": "$.get(\"/api/cart\"); ",
+      "context": "axios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}); \n$.get(\"/api/cart\"); \n$.getJSON(\"/api/items\"); \n \n// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; ",
+      "context_start_line": 73,
+      "context_end_line": 83
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"/api/items\"",
+      "param_name": "\"/api/items\"",
+      "param_value": null,
+      "line": 79,
+      "full_match": ".getJSON(\"/api/items\")",
+      "line_content": "$.getJSON(\"/api/items\"); ",
+      "context": "$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}); \n$.get(\"/api/cart\"); \n$.getJSON(\"/api/items\"); \n \n// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; ",
+      "context_start_line": 74,
+      "context_end_line": 84
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"GET\", \"/api/status\"",
+      "param_name": "\"GET\"",
+      "param_value": null,
+      "line": 92,
+      "full_match": ".open(\"GET\", \"/api/status\")",
+      "line_content": "xhr.open(\"GET\", \"/api/status\"); ",
+      "context": "fetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\"); \nxhr.send(); \n \n// API Paths \nconst endpoints = { \n    login: \"/api/v1/auth/login\", ",
+      "context_start_line": 87,
+      "context_end_line": 97
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"/api/login\", { username, password, token }",
+      "param_name": "\"/api/login\"",
+      "param_value": null,
+      "line": 122,
+      "full_match": ".post(\"/api/login\", { username, password, token })",
+      "line_content": "    return axios.post(\"/api/login\", { username, password, token }); ",
+      "context": "    return fetch(`/api/users/${userId}?key=${apiKey}`); \n} \n \nfunction processRequest(params) { \n    const { username, password, token } = params; \n    return axios.post(\"/api/login\", { username, password, token }); \n} \n \nconst urlParams = new URLSearchParams(window.location.search); \nconst apiKeyParam = urlParams.get(\"key\"); \n ",
+      "context_start_line": 117,
+      "context_end_line": 127
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"key\"",
+      "param_name": "\"key\"",
+      "param_value": null,
+      "line": 126,
+      "full_match": ".get(\"key\")",
+      "line_content": "const apiKeyParam = urlParams.get(\"key\"); ",
+      "context": "    const { username, password, token } = params; \n    return axios.post(\"/api/login\", { username, password, token }); \n} \n \nconst urlParams = new URLSearchParams(window.location.search); \nconst apiKeyParam = urlParams.get(\"key\"); \n \n// Paths and Directories \nconst configPath = \"/config/app.json\"; \nconst assetPath = \"./assets/images/logo.png\"; \nconst scriptPath = \"../scripts/utils.js\"; ",
+      "context_start_line": 121,
+      "context_end_line": 131
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"button\"",
+      "param_name": "\"button\"",
+      "param_value": null,
+      "line": 169,
+      "full_match": ".getElementById(\"button\")",
+      "line_content": "document.getElementById(\"button\").onclick = function() { ",
+      "context": " \n// JWT Token (example) \nconst jwtToken = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\"; \n \n// Event handlers (potential XSS) \ndocument.getElementById(\"button\").onclick = function() { \n    document.getElementById(\"output\").innerHTML = userInput; \n}; \n \nwindow.onerror = function(msg, url, line) { \n    document.write(\"Error: \" + msg); // XSS: document.write in error handler ",
+      "context_start_line": 164,
+      "context_end_line": 174
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"output\"",
+      "param_name": "\"output\"",
+      "param_value": null,
+      "line": 170,
+      "full_match": ".getElementById(\"output\")",
+      "line_content": "    document.getElementById(\"output\").innerHTML = userInput; ",
+      "context": "// JWT Token (example) \nconst jwtToken = \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c\"; \n \n// Event handlers (potential XSS) \ndocument.getElementById(\"button\").onclick = function() { \n    document.getElementById(\"output\").innerHTML = userInput; \n}; \n \nwindow.onerror = function(msg, url, line) { \n    document.write(\"Error: \" + msg); // XSS: document.write in error handler \n}; ",
+      "context_start_line": 165,
+      "context_end_line": 175
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "\"Error: \" + msg",
+      "param_name": "\"Error",
+      "param_value": null,
+      "line": 174,
+      "full_match": ".write(\"Error: \" + msg)",
+      "line_content": "    document.write(\"Error: \" + msg); // XSS: document.write in error handler ",
+      "context": "document.getElementById(\"button\").onclick = function() { \n    document.getElementById(\"output\").innerHTML = userInput; \n}; \n \nwindow.onerror = function(msg, url, line) { \n    document.write(\"Error: \" + msg); // XSS: document.write in error handler \n}; \n \n// More API calls \nconst apiClient = { \n    baseURL: \" `https://api.production.com` \", ",
+      "context_start_line": 169,
+      "context_end_line": 179
+    },
+    {
+      "type": "Method Call Parameters",
+      "parameter": "data",
+      "param_name": "data",
+      "param_value": null,
+      "line": 191,
+      "full_match": ".stringify(data)",
+      "line_content": "        body: JSON.stringify(data), ",
+      "context": " \n// Function parameters \nfunction makeRequest(method, endpoint, data, headers) { \n    return fetch(endpoint, { \n        method: method, \n        body: JSON.stringify(data), \n        headers: headers \n    }); \n} \n \n// URL construction ",
+      "context_start_line": 186,
+      "context_end_line": 196
+    },
+    {
+      "type": "URL Parameters Object",
+      "parameter": "URLSearchParams(window.location.search)",
+      "param_name": null,
+      "param_value": null,
+      "line": 125,
+      "full_match": "URLSearchParams(window.location.search)",
+      "line_content": "const urlParams = new URLSearchParams(window.location.search); ",
+      "context": "function processRequest(params) { \n    const { username, password, token } = params; \n    return axios.post(\"/api/login\", { username, password, token }); \n} \n \nconst urlParams = new URLSearchParams(window.location.search); \nconst apiKeyParam = urlParams.get(\"key\"); \n \n// Paths and Directories \nconst configPath = \"/config/app.json\"; \nconst assetPath = \"./assets/images/logo.png\"; ",
+      "context_start_line": 120,
+      "context_end_line": 130
+    },
+    {
+      "type": "URLSearchParams Constructor",
+      "parameter": "window.location.search",
+      "param_name": "window.location.search",
+      "param_value": null,
+      "line": 125,
+      "full_match": "new URLSearchParams(window.location.search)",
+      "line_content": "const urlParams = new URLSearchParams(window.location.search); ",
+      "context": "function processRequest(params) { \n    const { username, password, token } = params; \n    return axios.post(\"/api/login\", { username, password, token }); \n} \n \nconst urlParams = new URLSearchParams(window.location.search); \nconst apiKeyParam = urlParams.get(\"key\"); \n \n// Paths and Directories \nconst configPath = \"/config/app.json\"; \nconst assetPath = \"./assets/images/logo.png\"; ",
+      "context_start_line": 120,
+      "context_end_line": 130
+    },
+    {
+      "type": "URLSearchParams.get()",
+      "parameter": "/api/products",
+      "param_name": null,
+      "param_value": null,
+      "line": 72,
+      "full_match": ".get(\"/api/products\"",
+      "line_content": "axios.get(\"/api/products\"); ",
+      "context": "}; \n \n// API Endpoints \nfetch(\"/api/users/123\"); \nfetch(`/api/data/${userId}`); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}); ",
+      "context_start_line": 67,
+      "context_end_line": 77
+    },
+    {
+      "type": "URLSearchParams.get()",
+      "parameter": "/api/cart",
+      "param_name": null,
+      "param_value": null,
+      "line": 78,
+      "full_match": ".get(\"/api/cart\"",
+      "line_content": "$.get(\"/api/cart\"); ",
+      "context": "axios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}); \n$.get(\"/api/cart\"); \n$.getJSON(\"/api/items\"); \n \n// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; ",
+      "context_start_line": 73,
+      "context_end_line": 83
+    },
+    {
+      "type": "URLSearchParams.get()",
+      "parameter": "key",
+      "param_name": null,
+      "param_value": null,
+      "line": 126,
+      "full_match": ".get(\"key\"",
+      "line_content": "const apiKeyParam = urlParams.get(\"key\"); ",
+      "context": "    const { username, password, token } = params; \n    return axios.post(\"/api/login\", { username, password, token }); \n} \n \nconst urlParams = new URLSearchParams(window.location.search); \nconst apiKeyParam = urlParams.get(\"key\"); \n \n// Paths and Directories \nconst configPath = \"/config/app.json\"; \nconst assetPath = \"./assets/images/logo.png\"; \nconst scriptPath = \"../scripts/utils.js\"; ",
+      "context_start_line": 121,
+      "context_end_line": 131
+    },
+    {
+      "type": "Request Parameters",
+      "parameter": " data: orderData ",
+      "param_name": "data",
+      "param_value": null,
+      "line": 72,
+      "full_match": ".get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }",
+      "line_content": "axios.get(\"/api/products\"); ",
+      "context": "}; \n \n// API Endpoints \nfetch(\"/api/users/123\"); \nfetch(`/api/data/${userId}`); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}); ",
+      "context_start_line": 67,
+      "context_end_line": 77
+    },
+    {
+      "type": "Request Parameters",
+      "parameter": "post",
+      "param_name": "post",
+      "param_value": null,
+      "line": 122,
+      "full_match": ".post(\"/api/login\", { username, password, token }",
+      "line_content": "    return axios.post(\"/api/login\", { username, password, token }); ",
+      "context": "    return fetch(`/api/users/${userId}?key=${apiKey}`); \n} \n \nfunction processRequest(params) { \n    const { username, password, token } = params; \n    return axios.post(\"/api/login\", { username, password, token }); \n} \n \nconst urlParams = new URLSearchParams(window.location.search); \nconst apiKeyParam = urlParams.get(\"key\"); \n ",
+      "context_start_line": 117,
+      "context_end_line": 127
+    },
+    {
+      "type": "Request Parameters (short)",
+      "parameter": "{ data: orderData }",
+      "param_name": "{ data",
+      "param_value": null,
+      "line": 72,
+      "full_match": ".get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData })",
+      "line_content": "axios.get(\"/api/products\"); ",
+      "context": "}; \n \n// API Endpoints \nfetch(\"/api/users/123\"); \nfetch(`/api/data/${userId}`); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}); ",
+      "context_start_line": 67,
+      "context_end_line": 77
+    },
+    {
+      "type": "Request Parameters (short)",
+      "parameter": ".get(\"/api/cart\"); \n$.getJSON(\"/api/items\"); \n \n// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\")",
+      "param_name": null,
+      "param_value": null,
+      "line": 78,
+      "full_match": ".get(\"/api/cart\"); \n$.getJSON(\"/api/items\"); \n \n// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\")",
+      "line_content": "$.get(\"/api/cart\"); ",
+      "context": "axios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}); \n$.get(\"/api/cart\"); \n$.getJSON(\"/api/items\"); \n \n// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; ",
+      "context_start_line": 73,
+      "context_end_line": 83
+    },
+    {
+      "type": "Request Parameters (short)",
+      "parameter": "pass",
+      "param_name": "pass",
+      "param_value": null,
+      "line": 126,
+      "full_match": ".get(\"key\"); \n \n// Paths and Directories \nconst configPath = \"/config/app.json\"; \nconst assetPath = \"./assets/images/logo.png\"; \nconst scriptPath = \"../scripts/utils.js\"; \nconst dataDir = \"/data/exports/\"; \nconst logFile = \"logs/application.log\"; \n \n// HACK: Temporary fix for authentication \nfunction authenticate(user, pass)",
+      "line_content": "const apiKeyParam = urlParams.get(\"key\"); ",
+      "context": "    const { username, password, token } = params; \n    return axios.post(\"/api/login\", { username, password, token }); \n} \n \nconst urlParams = new URLSearchParams(window.location.search); \nconst apiKeyParam = urlParams.get(\"key\"); \n \n// Paths and Directories \nconst configPath = \"/config/app.json\"; \nconst assetPath = \"./assets/images/logo.png\"; \nconst scriptPath = \"../scripts/utils.js\"; ",
+      "context_start_line": 121,
+      "context_end_line": 131
+    },
+    {
+      "type": "Fetch Request Parameters",
+      "parameter": " data: orderData ",
+      "param_name": "data",
+      "param_value": null,
+      "line": 70,
+      "full_match": "fetch(\"/api/users/123\"); \nfetch(`/api/data/${userId}`); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }",
+      "line_content": "fetch(\"/api/users/123\"); ",
+      "context": "const renderUser = function(userInput) { \n    document.getElementById(\"user\").innerHTML = userInput; // Arrow function with DOM manipulation \n}; \n \n// API Endpoints \nfetch(\"/api/users/123\"); \nfetch(`/api/data/${userId}`); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", ",
+      "context_start_line": 65,
+      "context_end_line": 75
+    },
+    {
+      "type": "Fetch Request Parameters",
+      "parameter": " \n        method: method, \n        body: JSON.stringify(data), \n        headers: headers \n    ",
+      "param_name": "method",
+      "param_value": null,
+      "line": 189,
+      "full_match": "fetch(endpoint, { \n        method: method, \n        body: JSON.stringify(data), \n        headers: headers \n    }",
+      "line_content": "    return fetch(endpoint, { ",
+      "context": "    } \n}; \n \n// Function parameters \nfunction makeRequest(method, endpoint, data, headers) { \n    return fetch(endpoint, { \n        method: method, \n        body: JSON.stringify(data), \n        headers: headers \n    }); \n} ",
+      "context_start_line": 184,
+      "context_end_line": 194
+    },
+    {
+      "type": "Location with Parameters",
+      "parameter": "location.href = \"/dashboard?user=admin&role=super\"",
+      "param_name": null,
+      "param_value": null,
+      "line": 88,
+      "full_match": "location.href = \"/dashboard?user=admin&role=super\"",
+      "line_content": "location.href = \"/dashboard?user=admin&role=super\"; ",
+      "context": "const apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\"); \nxhr.send(); ",
+      "context_start_line": 83,
+      "context_end_line": 93
+    },
+    {
+      "type": "Location with Parameters",
+      "parameter": "location.search = \"?email=test@test.com&key=secret\"",
+      "param_name": null,
+      "param_value": null,
+      "line": 89,
+      "full_match": "location.search = \"?email=test@test.com&key=secret\"",
+      "line_content": "window.location.search = \"?email=test@test.com&key=secret\"; ",
+      "context": "const apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\"); \nxhr.send(); \n ",
+      "context_start_line": 84,
+      "context_end_line": 94
+    },
+    {
+      "type": "Window Location with Parameters",
+      "parameter": "window.location.search = \"?email=test@test.com&key=secret\"",
+      "param_name": null,
+      "param_value": null,
+      "line": 89,
+      "full_match": "window.location.search = \"?email=test@test.com&key=secret\"",
+      "line_content": "window.location.search = \"?email=test@test.com&key=secret\"; ",
+      "context": "const apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\"); \nxhr.send(); \n ",
+      "context_start_line": 84,
+      "context_end_line": 94
+    },
+    {
+      "type": "Template Literal with Parameters",
+      "parameter": "); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}); \n$.get(\"/api/cart\"); \n$.getJSON(\"/api/items\"); \n \n// URL Parameters - Query Strings \nconst apiUrl1=\"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com",
+      "param_name": "); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url:",
+      "param_value": "\"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com",
+      "line": 71,
+      "full_match": "`); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}); \n$.get(\"/api/cart\"); \n$.getJSON(\"/api/items\"); \n \n// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `",
+      "line_content": "fetch(`/api/data/${userId}`); ",
+      "context": "    document.getElementById(\"user\").innerHTML = userInput; // Arrow function with DOM manipulation \n}; \n \n// API Endpoints \nfetch(\"/api/users/123\"); \nfetch(`/api/data/${userId}`); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" ",
+      "context_start_line": 66,
+      "context_end_line": 76
+    },
+    {
+      "type": "Template Literal with Parameters",
+      "parameter": "\"; \nfetch(\"/app?key=kjhsdjkfhsjk",
+      "param_name": "\"; \nfetch(\"/app?key",
+      "param_value": "kjhsdjkfhsjk",
+      "line": 86,
+      "full_match": "` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\"); \nxhr.send(); \n \n// API Paths \nconst endpoints = { \n    login: \"/api/v1/auth/login\", \n    logout: \"/api/v1/auth/logout\", \n    users: \"/api/v2/users\", \n    products: \"/api/products\", \n    cart: \"/api/cart\"\n};\n\n// CSS Content (Should not be detected as parameters)\nconst cssContent = \".main-content { margin-top: 4rem; padding: 10px; }\";\nconst style = `",
+      "line_content": "const apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; ",
+      "context": "// URL Parameters - Query Strings \nconst apiUrl1 = \"/app?key=kjhsdjkfhsjk\"; \nconst apiUrl2 = \"/login?email=user@example.com&password=secret123\"; \nconst apiUrl3 = \"/download?file=document.pdf&token=abc123\"; \nconst apiUrl4 = \"/api/data?id=12345&session=xyz789\"; \nconst apiUrl5 = \" `https://api.example.com/v1/users?uid=999&access_token=token123` \"; \nfetch(\"/app?key=kjhsdjkfhsjk&action=view\"); \nlocation.href = \"/dashboard?user=admin&role=super\"; \nwindow.location.search = \"?email=test@test.com&key=secret\"; \n \nconst xhr = new XMLHttpRequest(); ",
+      "context_start_line": 81,
+      "context_end_line": 91
+    },
+    {
+      "type": "Template Literal with Parameters",
+      "parameter": "/api/users/${userId}?key=${apiKey}",
+      "param_name": "/api/users/${userId}?key",
+      "param_value": "${apiKey}",
+      "line": 117,
+      "full_match": "`/api/users/${userId}?key=${apiKey}`",
+      "line_content": "    return fetch(`/api/users/${userId}?key=${apiKey}`); ",
+      "context": "    orders: \"/v3/orders\" \n}; \n \n// Parameters \nfunction getUserData(userId, apiKey) { \n    return fetch(`/api/users/${userId}?key=${apiKey}`); \n} \n \nfunction processRequest(params) { \n    const { username, password, token } = params; \n    return axios.post(\"/api/login\", { username, password, token }); ",
+      "context_start_line": 112,
+      "context_end_line": 122
+    },
+    {
+      "type": "Object Parameters",
+      "parameter": " \n    return <div dangerouslySetInnerHTML={{ __html: userContent ",
+      "param_name": "return <div dangerouslySetInnerHTML={{ __html",
+      "param_value": null,
+      "line": 43,
+      "full_match": "{ \n    return <div dangerouslySetInnerHTML={{ __html: userContent }",
+      "line_content": "function ReactComponent({ userContent }) { ",
+      "context": "function evalUserCode(userCode) { \n    eval(userCode); // XSS: eval with user input - CRITICAL \n} \n \n// React XSS \nfunction ReactComponent({ userContent }) { \n    return <div dangerouslySetInnerHTML={{ __html: userContent }} />; // XSS: React dangerouslySetInnerHTML \n} \n \n// jQuery XSS \nfunction updateContent(content) { ",
+      "context_start_line": 38,
+      "context_end_line": 48
+    },
+    {
+      "type": "Object Parameters",
+      "parameter": " data: orderData ",
+      "param_name": "data",
+      "param_value": null,
+      "line": 73,
+      "full_match": "{ data: orderData }",
+      "line_content": "axios.post(\"/api/orders\", { data: orderData }); ",
+      "context": " \n// API Endpoints \nfetch(\"/api/users/123\"); \nfetch(`/api/data/${userId}`); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}); \n$.get(\"/api/cart\"); ",
+      "context_start_line": 68,
+      "context_end_line": 78
+    },
+    {
+      "type": "Object Parameters",
+      "parameter": " \n    url: \"/api/checkout\", \n    method: \"POST\" \n",
+      "param_name": "url",
+      "param_value": null,
+      "line": 74,
+      "full_match": "{ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}",
+      "line_content": "$.ajax({ ",
+      "context": "// API Endpoints \nfetch(\"/api/users/123\"); \nfetch(`/api/data/${userId}`); \naxios.get(\"/api/products\"); \naxios.post(\"/api/orders\", { data: orderData }); \n$.ajax({ \n    url: \"/api/checkout\", \n    method: \"POST\" \n}); \n$.get(\"/api/cart\"); \n$.getJSON(\"/api/items\"); ",
+      "context_start_line": 69,
+      "context_end_line": 79
+    },
+    {
+      "type": "Object Parameters",
+      "parameter": " \n    login: \"/api/v1/auth/login\", \n    logout: \"/api/v1/auth/logout\", \n    users: \"/api/v2/users\", \n    products: \"/api/products\", \n    cart: \"/api/cart\"\n",
+      "param_name": "login",
+      "param_value": null,
+      "line": 96,
+      "full_match": "{ \n    login: \"/api/v1/auth/login\", \n    logout: \"/api/v1/auth/logout\", \n    users: \"/api/v2/users\", \n    products: \"/api/products\", \n    cart: \"/api/cart\"\n}",
+      "line_content": "const endpoints = { ",
+      "context": "const xhr = new XMLHttpRequest(); \nxhr.open(\"GET\", \"/api/status\"); \nxhr.send(); \n \n// API Paths \nconst endpoints = { \n    login: \"/api/v1/auth/login\", \n    logout: \"/api/v1/auth/logout\", \n    users: \"/api/v2/users\", \n    products: \"/api/products\", \n    cart: \"/api/cart\"",
+      "context_start_line": 91,
+      "context_end_line": 101
+    },
+    {
+      "type": "Object Parameters",
+      "parameter": " \n    baseURL: \" `https://api.production.com` \", \n    endpoints: { \n        auth: \"/v1/auth\", \n        data: \"/v2/data\", \n        upload: \"/v1/upload\" \n    ",
+      "param_name": "baseURL",
+      "param_value": null,
+      "line": 178,
+      "full_match": "{ \n    baseURL: \" `https://api.production.com` \", \n    endpoints: { \n        auth: \"/v1/auth\", \n        data: \"/v2/data\", \n        upload: \"/v1/upload\" \n    }",
+      "line_content": "const apiClient = { ",
+      "context": "window.onerror = function(msg, url, line) { \n    document.write(\"Error: \" + msg); // XSS: document.write in error handler \n}; \n \n// More API calls \nconst apiClient = { \n    baseURL: \" `https://api.production.com` \", \n    endpoints: { \n        auth: \"/v1/auth\", \n        data: \"/v2/data\", \n        upload: \"/v1/upload\" ",
+      "context_start_line": 173,
+      "context_end_line": 183
+    },
+    {
+      "type": "Object Parameters",
+      "parameter": " \n    return fetch(endpoint, { \n        method: method, \n        body: JSON.stringify(data), \n        headers: headers \n    ",
+      "param_name": "return fetch(endpoint",
+      "param_value": null,
+      "line": 188,
+      "full_match": "{ \n    return fetch(endpoint, { \n        method: method, \n        body: JSON.stringify(data), \n        headers: headers \n    }",
+      "line_content": "function makeRequest(method, endpoint, data, headers) { ",
+      "context": "        upload: \"/v1/upload\" \n    } \n}; \n \n// Function parameters \nfunction makeRequest(method, endpoint, data, headers) { \n    return fetch(endpoint, { \n        method: method, \n        body: JSON.stringify(data), \n        headers: headers \n    }); ",
+      "context_start_line": 183,
+      "context_end_line": 193
+    },
+    {
+      "type": "Destructuring Parameters (const)",
+      "parameter": " username, password, token ",
+      "param_name": "username",
+      "param_value": null,
+      "line": 121,
+      "full_match": "const { username, password, token } =",
+      "line_content": "    const { username, password, token } = params; ",
+      "context": "function getUserData(userId, apiKey) { \n    return fetch(`/api/users/${userId}?key=${apiKey}`); \n} \n \nfunction processRequest(params) { \n    const { username, password, token } = params; \n    return axios.post(\"/api/login\", { username, password, token }); \n} \n \nconst urlParams = new URLSearchParams(window.location.search); \nconst apiKeyParam = urlParams.get(\"key\"); ",
+      "context_start_line": 116,
+      "context_end_line": 126
+    },
+    {
+      "type": "Function with Destructuring",
+      "parameter": " userContent ",
+      "param_name": "userContent",
+      "param_value": null,
+      "line": 43,
+      "full_match": "function ReactComponent({ userContent })",
+      "line_content": "function ReactComponent({ userContent }) { ",
+      "context": "function evalUserCode(userCode) { \n    eval(userCode); // XSS: eval with user input - CRITICAL \n} \n \n// React XSS \nfunction ReactComponent({ userContent }) { \n    return <div dangerouslySetInnerHTML={{ __html: userContent }} />; // XSS: React dangerouslySetInnerHTML \n} \n \n// jQuery XSS \nfunction updateContent(content) { ",
+      "context_start_line": 38,
+      "context_end_line": 48
+    }
   ],
   "recommendations": [
     {
@@ -176,6 +1411,12 @@
       "category": "Secrets Management",
       "title": "GitHub Tokens Exposed",
       "description": "Found 1 GitHub tokens. Revoke these immediately. Exposed tokens can allow attackers to access private repositories or modify code."
+    },
+    {
+      "priority": "High",
+      "category": "Secrets Management",
+      "title": "Keys Near API Calls",
+      "description": "Detected API keys near HTTP requests/endpoints: API URL Variable  `https://api.secureapp.com/endpoint`, API URL Variable  `https://api.secureapp.com/endpoint`, API URL Variable  `https://api.secureapp.com/endpoint`. Verify that sensitive keys are not used client-side and enforce allowlists (referrer/IP) where applicable."
     },
     {
       "priority": "High",
@@ -212,6 +1453,12 @@
       "category": "Framework Security",
       "title": "Unsafe React Pattern",
       "description": "Detected 'dangerouslySetInnerHTML' in React. Ensure content is sanitized using a library like DOMPurify before rendering."
+    },
+    {
+      "priority": "Medium",
+      "category": "Security Headers",
+      "title": "Missing Content Security Policy",
+      "description": "No Content Security Policy (CSP) header detected. Implement CSP to mitigate XSS attacks. Start with a report-only policy."
     }
   ]
 }

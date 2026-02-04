@@ -183,6 +183,23 @@ class JavaScriptAnalyzer:
         # Run all analyses with error handling
         try:
             api_keys = self.extractor.find_patterns(content, self.security_patterns.api_key_patterns)
+            
+            # Extract directory from URL and add to API keys
+            try:
+                parsed_url = urlparse(url)
+                if parsed_url.path:
+                    # Get directory path, handle trailing slash or file
+                    import os
+                    directory = os.path.dirname(parsed_url.path)
+                    # If directory is empty or root, use /
+                    if not directory:
+                        directory = "/"
+                    
+                    for key in api_keys:
+                        key["directory"] = directory
+            except Exception:
+                pass
+                
         except Exception as e:
             errors.append(f"Error analyzing API keys: {str(e)}")
             api_keys = []
@@ -218,7 +235,7 @@ class JavaScriptAnalyzer:
             xss_functions = []
             
         try:
-            api_endpoints = self.extractor.extract_api_endpoints(content)
+            api_endpoints = self.extractor.extract_api_endpoints(content, url)
         except Exception as e:
             errors.append(f"Error extracting API endpoints: {str(e)}")
             api_endpoints = []
@@ -242,6 +259,24 @@ class JavaScriptAnalyzer:
         except Exception as e:
             errors.append(f"Error extracting paths: {str(e)}")
             paths_directories = []
+        
+        try:
+            if api_keys and api_endpoints:
+                for k in api_keys:
+                    kl = k.get('line')
+                    related = []
+                    if isinstance(kl, int):
+                        for ep in api_endpoints:
+                            el = ep.get('line')
+                            if isinstance(el, int) and abs(el - kl) <= 20:
+                                related.append({
+                                    'method': ep.get('method'),
+                                    'path': ep.get('path'),
+                                    'line': el
+                                })
+                    k['related_endpoints'] = related[:5]
+        except Exception:
+            pass
             
         return AnalysisResult(
             url=url,
@@ -332,6 +367,30 @@ class JavaScriptAnalyzer:
                 result.csp_info = analyze_csp(headers)
                 result.cloudflare_analysis = analyze_cloudflare(headers, ip_address)
                 result.rate_limit_info = analyze_rate_limit(headers)
+                
+                try:
+                    need_csp_check = not result.csp_info or not result.csp_info.get('is_present')
+                    ct = (headers.get('Content-Type') or headers.get('content-type') or '').lower()
+                    if need_csp_check and ('javascript' in ct or ct.endswith('/js')):
+                        parsed = urlparse(url)
+                        if parsed.scheme and parsed.netloc:
+                            root_url = f"{parsed.scheme}://{parsed.netloc}/"
+                            rh = {}
+                            try:
+                                hr = requests.head(root_url, timeout=5, verify=False, allow_redirects=True)
+                                rh = dict(hr.headers)
+                            except Exception:
+                                try:
+                                    gr = requests.get(root_url, timeout=5, verify=False)
+                                    rh = dict(gr.headers)
+                                except Exception:
+                                    rh = {}
+                            if rh:
+                                csp_fallback = analyze_csp(rh)
+                                if csp_fallback and csp_fallback.get('is_present'):
+                                    result.csp_info = csp_fallback
+                except Exception:
+                    pass
             
             if ip_address:
                 result.ip_address = ip_address
