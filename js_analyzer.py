@@ -79,7 +79,6 @@ class JavaScriptAnalyzer:
         self.credential_patterns = [
             (r'(?i)(password|passwd|pwd)\s*[:=]\s*["\']([^"\']{3,})["\']', 'Password'),
             (r'(?i)(username|user[_-]?name|login)\s*[:=]\s*["\']([^"\']{3,})["\']', 'Username'),
-            (r'(?i)(email)\s*[:=]\s*["\']([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})["\']', 'Email'),
             (r'(?i)(db[_-]?password|database[_-]?password)\s*[:=]\s*["\']([^"\']{3,})["\']', 'Database Password'),
         ]
         

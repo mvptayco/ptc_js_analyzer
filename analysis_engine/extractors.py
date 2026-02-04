@@ -299,16 +299,6 @@ class PatternExtractor:
                         if any(t in str(label) for t in ['innerHTML', 'outerHTML', 'document.write', 'eval', 'Function', 'location', 'setAttribute', 'execCommand']):
                             technique = "DOM-based vulnerability analysis"
                         
-                        # Granular Pattern Matching Categories
-                        elif 'Email' in str(label):
-                            technique = "Email Extraction"
-                        elif any(t in str(label) for t in ['IPv4', 'IPv6', 'IP Address']):
-                            technique = "IP Address Discovery"
-                        elif any(t in str(label) for t in ['Key', 'Token', 'Secret', 'SID', 'Auth', 'Password', 'Credential', 'Username']):
-                            technique = "API Key & Credential Detection"
-                        elif 'Comment' in str(label):
-                            technique = "Comment Analysis"
-
                         # Dependencies
                         elif any(t in str(label) for t in ['jQuery', 'React', 'Vue', 'Angular', 'Bootstrap', 'Lodash', 'Moment', 'Dependency']):
                             technique = "Dependency and supply-chain analysis"
