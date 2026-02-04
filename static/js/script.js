@@ -858,6 +858,7 @@ $("analyzeBtn")?.addEventListener("click", async () => {
 
     CURRENT_RESULTS = Array.isArray(data.results) ? data.results : [];
     CURRENT_FILE_ID = null;
+    window.CURRENT_SESSION_ID = data.session_id;
 
     renderFilesGrid(CURRENT_RESULTS);
     renderStats(CURRENT_RESULTS);
@@ -886,6 +887,7 @@ $("analyzeMultipleBtn")?.addEventListener("click", async () => {
 
     CURRENT_RESULTS = Array.isArray(data.results) ? data.results : [];
     CURRENT_FILE_ID = null;
+    window.CURRENT_SESSION_ID = data.session_id;
 
     renderFilesGrid(CURRENT_RESULTS);
     renderStats(CURRENT_RESULTS);
@@ -913,6 +915,7 @@ $("analyzeFileBtn")?.addEventListener("click", async () => {
 
     CURRENT_RESULTS = Array.isArray(data.results) ? data.results : [];
     CURRENT_FILE_ID = null;
+    window.CURRENT_SESSION_ID = data.session_id;
 
     renderFilesGrid(CURRENT_RESULTS);
     renderStats(CURRENT_RESULTS);
@@ -929,3 +932,110 @@ $("analyzeFileBtn")?.addEventListener("click", async () => {
 
 
 /* function formatFinding removed */
+
+/* ============ CHAT WIDGET ============ */
+document.addEventListener('DOMContentLoaded', () => {
+  const chatToggleBtn = $('chatToggleBtn');
+  const chatWindow = $('chatWindow');
+  const chatCloseBtn = $('chatCloseBtn');
+  const chatMessages = $('chatMessages');
+  const chatInput = $('chatInput');
+  const chatSendBtn = $('chatSendBtn');
+
+  if (!chatToggleBtn || !chatWindow) return;
+
+  // Toggle chat window
+  chatToggleBtn.addEventListener('click', () => {
+    chatWindow.classList.toggle('hidden');
+    if (!chatWindow.classList.contains('hidden') && chatInput) {
+      chatInput.focus();
+    }
+  });
+
+  // Close chat window
+  chatCloseBtn?.addEventListener('click', () => {
+    chatWindow.classList.add('hidden');
+  });
+
+  // Send message function
+  const sendMessage = async () => {
+    const text = chatInput.value.trim();
+    if (!text) return;
+
+    // Add user message
+    addMessage(text, 'user');
+    chatInput.value = '';
+
+    // Show typing indicator
+    const typingId = addMessage("Thinking...", 'bot typing');
+
+    try {
+      // Find session ID from global results or DOM
+      // Assuming session ID is not explicitly stored in global var, 
+      // but we can try to infer or send empty. 
+      // For best results, app.py uses session to context.
+      // We will look for a session ID if available, else standard chat.
+      // Note: In this simple implementation, the backend updates context 
+      // based on whatever session_id is passed. 
+      // We'll grab the first session ID from the results if available.
+      
+      // Attempt to get session ID from URL or hidden field if stored.
+      // Since we don't store it globally in script.js, let's look at CURRENT_RESULTS?
+      // CURRENT_RESULTS is an array of files. We need the session key.
+      // We'll rely on the backend's in-memory storage. 
+      // Since we don't have the session ID handy in a variable, we'll try to get it.
+      // Actually, app.py returns session_id in the /analyze response.
+      // We should store it.
+      
+      // Fallback: If we can't find session ID, the chat engine will just use generic knowledge.
+      const sessionId = window.CURRENT_SESSION_ID || null;
+
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, session_id: sessionId })
+      });
+      
+      const data = await response.json();
+      
+      // Remove typing indicator
+      const typingEl = document.querySelector('.message.typing');
+      if (typingEl) typingEl.remove();
+      
+      addMessage(data.response || "I couldn't process that.", 'bot');
+      
+    } catch (err) {
+      const typingEl = document.querySelector('.message.typing');
+      if (typingEl) typingEl.remove();
+      addMessage("Sorry, I encountered an error connecting to the server.", 'bot');
+    }
+  };
+
+  // Add message to chat
+  const addMessage = (text, sender) => {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `message ${sender}`;
+    
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content';
+    contentDiv.innerHTML = text.replace(/\n/g, '<br>');
+    
+    msgDiv.appendChild(contentDiv);
+    chatMessages.appendChild(msgDiv);
+    
+    // Scroll to bottom
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    return msgDiv;
+  };
+
+  // Send button click
+  chatSendBtn?.addEventListener('click', sendMessage);
+
+  // Enter key in input
+  chatInput?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      sendMessage();
+    }
+  });
+});

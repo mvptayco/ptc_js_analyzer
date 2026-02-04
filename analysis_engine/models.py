@@ -26,3 +26,5 @@ class AnalysisResult:
     cloudflare_analysis: Optional[Dict[str, Any]] = None
     rate_limit_info: Optional[Dict[str, Any]] = None
     recommendations: Optional[List[Dict[str, Any]]] = None
+    skipped: bool = False
+    relevance_score: float = 0.0

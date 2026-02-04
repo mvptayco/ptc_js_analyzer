@@ -23,6 +23,7 @@ from analysis_engine.headers import (
     analyze_rate_limit
 )
 from analysis_engine.recommendations import generate_recommendations
+from analysis_engine.fast_filter import SmartFilter
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -34,6 +35,7 @@ class JavaScriptAnalyzer:
         # Initialize patterns and extractor
         self.security_patterns = SecurityPatterns()
         self.extractor = PatternExtractor(self.security_patterns)
+        self.smart_filter = SmartFilter()
 
     def fetch_js_file(self, url: str) -> Tuple[Optional[str], Optional[str], Optional[Dict[str, str]], Optional[str]]:
         """
@@ -154,6 +156,30 @@ class JavaScriptAnalyzer:
         errors = []
         file_size = len(content)
         
+        # ML-based Smart Filtering
+        # If the file is deemed irrelevant (e.g. minified jquery, UI libs), skip deep analysis
+        is_relevant = self.smart_filter.predict_relevance(content)
+        relevance_score = float(self.smart_filter.get_relevance_score(content))
+        
+        if not is_relevant:
+            return AnalysisResult(
+                url=url,
+                api_keys=[],
+                credentials=[],
+                emails=[],
+                interesting_comments=[],
+                xss_vulnerabilities=[],
+                xss_functions=[],
+                api_endpoints=[],
+                parameters=[],
+                paths_directories=[],
+                errors=["Skipped by ML Filter (Low relevance score: {:.2f})".format(relevance_score)],
+                file_size=file_size,
+                analysis_timestamp=datetime.now().isoformat(),
+                skipped=True,
+                relevance_score=relevance_score
+            )
+        
         # Run all analyses with error handling
         try:
             api_keys = self.extractor.find_patterns(content, self.security_patterns.api_key_patterns)
@@ -230,7 +256,8 @@ class JavaScriptAnalyzer:
             paths_directories=paths_directories,
             errors=errors,
             file_size=file_size,
-            analysis_timestamp=datetime.now().isoformat()
+            analysis_timestamp=datetime.now().isoformat(),
+            relevance_score=relevance_score
         )
 
     def analyze(self, url: str) -> AnalysisResult:

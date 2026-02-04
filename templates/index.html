@@ -65,7 +65,7 @@
           </button>
 
           <a class="btn-secondary" href="https://github.com/mvptayco" target="_blank" rel="noopener noreferrer">
-            <i class="fab fa-github" aria-hidden="true"></i> GitHub
+            <i class="fab fa-github" aria-hidden="true"></i> Author
           </a>
 
           <a class="btn-secondary" href="https://roadmap.sh/cyber-security" target="_blank" rel="noopener noreferrer">
@@ -133,6 +133,35 @@
         <p class="footer-disclaimer">For authorized security testing and educational purposes only</p>
       </footer>
     </main>
+
+    <!-- Chat Widget -->
+    <div class="chat-widget">
+      <div id="chatWindow" class="chat-window hidden">
+        <div class="chat-header">
+          <div class="chat-title">
+            <i class="fas fa-robot"></i> Security Assistant
+          </div>
+          <button id="chatCloseBtn" class="icon-btn" aria-label="Close chat">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <div id="chatMessages" class="chat-messages">
+              <div class="message bot">
+                <div class="message-content">Hello! I am your AI Security Assistant. Ask me anything about the analysis results.</div>
+              </div>
+            </div>
+            <div class="chat-input-area">
+              <input type="text" id="chatInput" placeholder="Ask a question..." aria-label="Chat input">
+              <button id="chatSendBtn" class="chat-send-btn" aria-label="Send message">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+      </div>
+      
+      <button id="chatToggleBtn" class="chat-toggle-btn" aria-label="Open chat">
+        <i class="fas fa-comments"></i>
+      </button>
+    </div>
 
     <!-- =========================
          ANALYZER MODAL (NEW)

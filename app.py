@@ -21,8 +21,9 @@ from flask_cors import CORS
 from werkzeug.utils import secure_filename
 
 from analyzer import JavaScriptAnalyzer
+from analysis_engine.ml_chat import MLChatEngine
 from ratelimit import RateLimiter
-from auth import require_api_key, get_api_key
+from auth import get_api_key
 
 # ===========================
 # App setup
@@ -40,6 +41,7 @@ app.config["MAX_CONTENT_LENGTH"] = 2 * 1024 * 1024  # 2MB
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 analyzer = JavaScriptAnalyzer()
+chat_engine = MLChatEngine()
 
 # Store analysis results in memory (prod: use Redis/DB)
 analysis_results: Dict[str, Dict[str, Any]] = {}
@@ -346,6 +348,26 @@ def get_file_result(session_id: str, file_id: int):
         return error_response("File not found", 404)
 
     return jsonify(file_result), 200
+
+
+@app.route("/api/chat", methods=["POST"])
+def chat():
+    """Chat with the security assistant (ML-powered)"""
+    data = request.json or {}
+    message = data.get("message", "")
+    session_id = data.get("session_id")
+    
+    if not message:
+        return error_response("Message required", 400)
+        
+    # Update context if session exists
+    if session_id and session_id in analysis_results:
+        results = analysis_results[session_id].get("files", [])
+        chat_engine.update_context(results)
+    
+    response = chat_engine.get_response(message)
+    return jsonify({"response": response})
+
 
 
 # -----------------------------------------
