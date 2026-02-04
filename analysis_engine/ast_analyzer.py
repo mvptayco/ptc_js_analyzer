@@ -1,5 +1,12 @@
 
-import esprima
+try:
+    import esprima
+    HAS_ESPRIMA = True
+except ImportError:
+    import logging
+    logging.warning("esprima not found. AST Analysis will be disabled.")
+    HAS_ESPRIMA = False
+
 import logging
 from typing import List, Dict, Any, Optional
 
@@ -39,6 +46,9 @@ class ASTAnalyzer:
         Parses content into AST and walks it to find issues.
         """
         self.findings = []
+        if not HAS_ESPRIMA:
+            return []
+            
         if not content or not content.strip():
             return []
 
@@ -99,31 +109,31 @@ class ASTAnalyzer:
             name = callee.name
             if name in self.risk_catalog:
                 self._add_finding(name, node, "Dangerous Function Call")
-
-        # Member calls: child_process.exec(...) or document.write(...)
+                
+        # Member calls: child_process.exec(...)
         elif callee.type == 'MemberExpression':
-            # Handle object.property format
-            prop_name = None
-            obj_name = None
-            
-            if callee.property.type == 'Identifier':
-                prop_name = callee.property.name
-            
-            if callee.object.type == 'Identifier':
-                obj_name = callee.object.name
-
-            # Check full match (e.g., child_process) or property match (e.g., exec)
-            # This is a heuristic; 'exec' could be on any object, but it's worth flagging
-            if prop_name in self.risk_catalog:
-                 self._add_finding(f"{obj_name}.{prop_name}" if obj_name else prop_name, node, "Dangerous Method Call")
+            if hasattr(callee.property, 'name'):
+                prop = callee.property.name
+                
+                # Check for object.method patterns
+                if hasattr(callee.object, 'name'):
+                    obj = callee.object.name
+                    full_call = f"{obj}.{prop}"
+                    if full_call in self.risk_catalog:
+                         self._add_finding(full_call, node, "Dangerous Method Call")
+                    elif obj in self.risk_catalog: # e.g. child_process
+                         self._add_finding(obj, node, "Dangerous Module Usage")
+                
+                # Check generic methods (exec, spawn) if robust checking enabled
+                if prop in self.risk_catalog:
+                    self._add_finding(prop, node, "Dangerous Method Call")
 
     def _check_assignment_expression(self, node):
-        left = node.left
-        if left.type == 'MemberExpression':
-            if left.property.type == 'Identifier':
-                prop_name = left.property.name
-                if prop_name in ['innerHTML', 'outerHTML', 'dangerouslySetInnerHTML']:
-                    self._add_finding(prop_name, node, "DOM Sink Assignment")
+        if node.left.type == 'MemberExpression':
+            if hasattr(node.left.property, 'name'):
+                prop = node.left.property.name
+                if prop in ['innerHTML', 'outerHTML', 'dangerouslySetInnerHTML']:
+                    self._add_finding(prop, node, "DOM Injection Sink")
 
     def _check_new_expression(self, node):
         callee = node.callee
