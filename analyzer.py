@@ -149,6 +149,26 @@ class JavaScriptAnalyzer:
         """Proxy to the imported generate_recommendations function"""
         return generate_recommendations(result)
 
+    def get_referenced_scripts(self, content: str, base_url: str) -> List[str]:
+        """Extract all referenced script URLs from HTML content"""
+        scripts = []
+        try:
+            # Simple regex for script src
+            # Handles <script src="..."> and <script type="..." src="...">
+            matches = re.finditer(r'<script[^>]+src=["\']([^"\']+)["\']', content, re.IGNORECASE)
+            for match in matches:
+                src = match.group(1)
+                # Resolve relative URLs
+                if base_url:
+                    from urllib.parse import urljoin
+                    full_url = urljoin(base_url, src)
+                    scripts.append(full_url)
+                else:
+                    scripts.append(src)
+        except Exception:
+            pass
+        return list(set(scripts))  # Deduplicate
+
     def analyze_content(self, content: str, url: str = "local") -> AnalysisResult:
         """
         Analyze JavaScript content directly
@@ -203,6 +223,18 @@ class JavaScriptAnalyzer:
         except Exception as e:
             errors.append(f"Error analyzing API keys: {str(e)}")
             api_keys = []
+
+        # CSP in Meta Tags (Fallback)
+        csp_meta = None
+        try:
+            # Check for <meta http-equiv="Content-Security-Policy" content="...">
+            csp_matches = re.findall(r'<meta\s+http-equiv=["\']Content-Security-Policy["\']\s+content=["\']([^"\']+)["\']', content, re.IGNORECASE)
+            if csp_matches:
+                from analysis_engine.headers import analyze_csp
+                # Create a fake headers dict
+                csp_meta = analyze_csp({'Content-Security-Policy': csp_matches[0]})
+        except Exception:
+            pass
         
         try:
             credentials = self.extractor.find_patterns(content, self.security_patterns.credential_patterns)
@@ -294,6 +326,11 @@ class JavaScriptAnalyzer:
             analysis_timestamp=datetime.now().isoformat(),
             relevance_score=relevance_score
         )
+        
+        if csp_meta:
+            result.csp_info = csp_meta
+            
+        return result
 
     def analyze(self, url: str) -> AnalysisResult:
         """

@@ -161,16 +161,16 @@ class SecurityPatterns:
             (r'["\']([^"\']+[?&][^"\']+)["\']', 'URL with Query Parameters'),
             
             # Function parameters - ALL function definitions
-            (r'function\s+(\w+)\s*\(([^)]+)\)', 'Function Parameters'),
-            (r'function\s*\(([^)]+)\)', 'Anonymous Function Parameters'),
-            (r'(\w+)\s*[:=]\s*function\s*\(([^)]+)\)', 'Function Expression Parameters'),
-            (r'\(([^)]+)\)\s*=>', 'Arrow Function Parameters'),
-            (r'const\s+\w+\s*=\s*\(([^)]+)\)\s*=>', 'Arrow Function (const)'),
-            (r'let\s+\w+\s*=\s*\(([^)]+)\)\s*=>', 'Arrow Function (let)'),
-            (r'var\s+\w+\s*=\s*\(([^)]+)\)\s*=>', 'Arrow Function (var)'),
+            # (r'function\s+(\w+)\s*\(([^)]+)\)', 'Function Parameters'),
+            # (r'function\s*\(([^)]+)\)', 'Anonymous Function Parameters'),
+            # (r'(\w+)\s*[:=]\s*function\s*\(([^)]+)\)', 'Function Expression Parameters'),
+            # (r'\(([^)]+)\)\s*=>', 'Arrow Function Parameters'),
+            # (r'const\s+\w+\s*=\s*\(([^)]+)\)\s*=>', 'Arrow Function (const)'),
+            # (r'let\s+\w+\s*=\s*\(([^)]+)\)\s*=>', 'Arrow Function (let)'),
+            # (r'var\s+\w+\s*=\s*\(([^)]+)\)\s*=>', 'Arrow Function (var)'),
             
             # Method parameters
-            (r'\.(\w+)\s*\(([^)]+)\)', 'Method Call Parameters'),
+            # (r'\.(\w+)\s*\(([^)]+)\)', 'Method Call Parameters'),
             
             # URLSearchParams - extract all parameters
             (r'URLSearchParams\s*\([^)]*\)', 'URL Parameters Object'),
@@ -215,8 +215,8 @@ class SecurityPatterns:
             (r'\.addEventListener\s*\(["\']([^"\']+)["\'],\s*\(([^)]+)\)\s*=>', 'EventListener Arrow Parameters'),
             
             # Callback parameters
-            (r'\.(then|catch|finally)\s*\(([^)]+)\)', 'Promise Callback Parameters'),
-            (r'\.(map|filter|reduce|forEach|find)\s*\(([^)]+)\)', 'Array Method Parameters'),
+            # (r'\.(then|catch|finally)\s*\(([^)]+)\)', 'Promise Callback Parameters'),
+            # (r'\.(map|filter|reduce|forEach|find)\s*\(([^)]+)\)', 'Array Method Parameters'),
         ]
         
         # Path and directory patterns
