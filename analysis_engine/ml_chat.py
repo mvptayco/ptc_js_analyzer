@@ -1,23 +1,29 @@
-import numpy as np
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-import re
-import json
 import os
+import json
+import google.generativeai as genai
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 class MLChatEngine:
     def __init__(self):
-        # Remove stop_words='english' to allow matching phrases like "how are you"
-        self.vectorizer = TfidfVectorizer()
-        self.knowledge_base = []
-        self.corpus = []
-        self.vectors = None
-        self._initialize_knowledge_base()
-        self.fit_model()
+        self.api_key = os.getenv("GOOGLE_API_KEY")
+        self.model = None
+        self.chat_session = None
+        self.system_instruction = ""
+        self.analysis_context = ""
+        
+        if self.api_key:
+            genai.configure(api_key=self.api_key)
+            self._initialize_system_instruction()
+            self._setup_model()
+        else:
+            print("Warning: GOOGLE_API_KEY not found. Chatbot will not function correctly.")
 
-    def _initialize_knowledge_base(self):
-        """Initialize with static security knowledge from external JSON file"""
-        self.knowledge_base = []
+    def _initialize_system_instruction(self):
+        """Load static knowledge base and format as system instruction"""
+        knowledge_base = []
         
         # Path to the data file
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -26,27 +32,37 @@ class MLChatEngine:
         try:
             if os.path.exists(data_path):
                 with open(data_path, 'r', encoding='utf-8') as f:
-                    self.knowledge_base = json.load(f)
-            else:
-                # Fallback if file doesn't exist (shouldn't happen in normal operation)
-                print(f"Warning: Chatbot knowledge base not found at {data_path}")
+                    knowledge_base = json.load(f)
         except Exception as e:
             print(f"Error loading chatbot knowledge base: {e}")
-            self.knowledge_base = []
 
-    def fit_model(self):
-        """Train TF-IDF model on current corpus"""
-        self.corpus = [item["question"] + " " + item.get("keywords", "") for item in self.knowledge_base]
-        if self.corpus:
-            self.vectors = self.vectorizer.fit_transform(self.corpus)
+        # Format knowledge base as instructions
+        kb_text = "You are a JavaScript Security Assistant. Use the following knowledge base to answer questions:\n\n"
+        for item in knowledge_base:
+            kb_text += f"Q: {item['question']}\nA: {item['answer']}\nKeywords: {item.get('keywords', '')}\n\n"
+            
+        self.system_instruction = kb_text + "\nIf the user asks about specific analysis results, refer to the provided context."
+
+    def _setup_model(self):
+        """Initialize Gemini model"""
+        generation_config = {
+            "temperature": 0.7,
+            "top_p": 0.95,
+            "top_k": 40,
+            "max_output_tokens": 8192,
+        }
+        
+        self.model = genai.GenerativeModel(
+            model_name="gemini-2.0-flash",
+            generation_config=generation_config,
+            system_instruction=self.system_instruction
+        )
+        self.chat_session = self.model.start_chat(history=[])
 
     def update_context(self, analysis_results):
-        """Update KB with dynamic findings from the latest analysis"""
-        # Reset to base KB
-        self._initialize_knowledge_base()
-        
+        """Update context with findings from the latest analysis"""
         if not analysis_results:
-            self.fit_model()
+            self.analysis_context = "No analysis results available yet."
             return
 
         # Flatten findings
@@ -56,46 +72,35 @@ class MLChatEngine:
                 findings.extend(file_res.get('findings', []))
         elif isinstance(analysis_results, dict):
              findings.extend(analysis_results.get('findings', []))
-
-        # Add dynamic Q&A
-        for f in findings:
-            desc = f.get('description', '')
-            ftype = f.get('type', '')
-            severity = f.get('severity', '')
-            
-            # Question about specific finding
-            self.knowledge_base.append({
-                "question": f"tell me about the {severity} {ftype} finding",
-                "answer": f"I found a {severity} severity {ftype} issue: {desc}. You should review the code near this finding.",
-                "keywords": f"{ftype} {severity} finding issue problem"
-            })
-            
-            # General "what did you find"
-            self.knowledge_base.append({
-                "question": "what did you find",
-                "answer": f"I found several issues, including a {severity} {ftype}. Check the results grid for details.",
-                "keywords": "summary findings results report"
-            })
-
-        self.fit_model()
+             
+        # Format findings for the model
+        context = "Here are the latest analysis findings:\n"
+        if not findings:
+            context += "No security issues were found in the analyzed files.\n"
+        else:
+            for f in findings:
+                desc = f.get('description', 'No description')
+                ftype = f.get('type', 'Unknown')
+                severity = f.get('severity', 'Unknown')
+                context += f"- [{severity}] {ftype}: {desc}\n"
+                
+        self.analysis_context = context
+        
+        # Send context to chat session as a system message (simulated via user message)
+        if self.chat_session:
+             try:
+                self.chat_session.send_message(f"System Update: {self.analysis_context}")
+             except Exception as e:
+                 print(f"Error updating context: {e}")
 
     def get_response(self, user_input):
-        """Get best matching response using Cosine Similarity"""
-        if not self.vectors is not None or not self.corpus:
-            return "I'm initializing. Please try again in a moment."
-
-        # Vectorize user input
-        user_vec = self.vectorizer.transform([user_input])
-        
-        # Calculate similarities
-        similarities = cosine_similarity(user_vec, self.vectors).flatten()
-        
-        # Get best match
-        best_idx = np.argmax(similarities)
-        score = similarities[best_idx]
-        
-        # Threshold for "I don't know"
-        if score < 0.2:
-            return "I'm not sure about that. Try asking about XSS, API keys, or specific findings in your code."
+        """Get response from Gemini"""
+        if not self.model:
+            return "Error: Chatbot is not properly configured. Please check the API key."
             
-        return self.knowledge_base[best_idx]["answer"]
+        try:
+            response = self.chat_session.send_message(user_input)
+            return response.text
+        except Exception as e:
+            return f"I encountered an error while processing your request: {str(e)}"
+
