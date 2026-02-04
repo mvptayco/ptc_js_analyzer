@@ -5,7 +5,8 @@ import re
 
 class MLChatEngine:
     def __init__(self):
-        self.vectorizer = TfidfVectorizer(stop_words='english')
+        # Remove stop_words='english' to allow matching phrases like "how are you"
+        self.vectorizer = TfidfVectorizer()
         self.knowledge_base = []
         self.corpus = []
         self.vectors = None
@@ -64,6 +65,26 @@ class MLChatEngine:
                 "question": "what is the author job description",
                 "answer": "Jhonel Alam is an IT Security Engineer at Philtrust Bank. He specializes in Cybersecurity and Data Analysis, with a strong focus on securing applications and infrastructure.",
                 "keywords": "job description bio background details"
+            },
+            {
+                "question": "hello hi hey greetings",
+                "answer": "Hello! I am your JavaScript Security Assistant. How can I help you analyze your code today?",
+                "keywords": "hello hi hey greetings good morning afternoon evening"
+            },
+            {
+                "question": "how are you",
+                "answer": "I'm doing great, thank you! I'm ready to help you find security vulnerabilities in your JavaScript files.",
+                "keywords": "how are you how do you do status"
+            },
+            {
+                "question": "what can you do help capabilities",
+                "answer": "I can analyze JavaScript files for security issues like XSS, API leaks, and hardcoded credentials. I can also explain security concepts and provide remediation advice.",
+                "keywords": "help capabilities what can you do features"
+            },
+            {
+                "question": "who are you bot identity",
+                "answer": "I am a Machine Learning-powered Security Assistant designed to help you secure your web applications.",
+                "keywords": "who are you identity bot what are you"
             }
         ]
         
