@@ -49,6 +49,21 @@ class MLChatEngine:
                 "question": "how to use this tool",
                 "answer": "Upload a JavaScript file or provide a URL to analyze it. The tool scans for API keys, XSS vulnerabilities, and other security issues. Check the 'Recommendations' tab for fixes.",
                 "keywords": "help usage how to use tool guide"
+            },
+            {
+                "question": "who is the author creator developer",
+                "answer": "The tool was created by Jhonel Alam, an IT Security Engineer at Philtrust Bank. He is also a Cybersecurity Specialist and Data Analyst based in Manila.",
+                "keywords": "author creator developer who made jhonel alam owner"
+            },
+            {
+                "question": "contact linkedin email info",
+                "answer": "You can reach Jhonel Alam via email at jhonel.alam1@gmail.com or visit his LinkedIn: https://ph.linkedin.com/in/jhonel-alam-889a9622b",
+                "keywords": "contact email linkedin social link"
+            },
+            {
+                "question": "what is the author job description",
+                "answer": "Jhonel Alam is an IT Security Engineer at Philtrust Bank. He specializes in Cybersecurity and Data Analysis, with a strong focus on securing applications and infrastructure.",
+                "keywords": "job description bio background details"
             }
         ]
         
